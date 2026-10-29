@@ -1,0 +1,2022 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flask Notes - Module 2: Routing and HTTP Fundamentals</title>
+
+<style>
+:root {
+    --primary: #075985;
+    --dark: #0c4a6e;
+    --accent: #0d9488;
+    --background: #f4f7fb;
+    --surface: #ffffff;
+    --text: #263445;
+    --muted: #526174;
+    --border: #dce5ee;
+    --code-bg: #172435;
+    --note-bg: #e8f5ff;
+    --success-bg: #e8f7ef;
+    --warning-bg: #fff5df;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+header {
+    background: linear-gradient(135deg, #082f49, #075985);
+    color: white;
+    padding: 44px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: clamp(28px, 5vw, 43px);
+    line-height: 1.3;
+    margin: 10px 0;
+}
+
+header p {
+    max-width: 850px;
+    margin: 8px auto;
+}
+
+.tag {
+    display: inline-block;
+    border: 1px solid rgba(255,255,255,.5);
+    border-radius: 30px;
+    padding: 4px 13px;
+    font-size: 13px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 0 22px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 12px rgba(20,45,70,.035);
+}
+
+h2 {
+    color: var(--dark);
+    font-size: 27px;
+    line-height: 1.4;
+    padding-bottom: 10px;
+    margin: 0 0 18px;
+    border-bottom: 2px solid var(--border);
+    scroll-margin-top: 15px;
+}
+
+h3 {
+    color: var(--primary);
+    font-size: 21px;
+    margin-top: 27px;
+    margin-bottom: 10px;
+}
+
+h4 {
+    color: var(--text);
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+p { margin: 10px 0 15px; }
+
+ul, ol { padding-left: 27px; }
+
+li { margin-bottom: 6px; }
+
+strong { color: #153b56; }
+
+a { color: var(--primary); }
+
+.toc {
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 20px 25px;
+}
+
+.toc ol {
+    columns: 2;
+    column-gap: 35px;
+}
+
+.toc li { break-inside: avoid; }
+
+.toc a { text-decoration: none; }
+
+.toc a:hover { text-decoration: underline; }
+
+.note, .success, .warning {
+    padding: 15px 18px;
+    border-left: 4px solid;
+    border-radius: 5px;
+    margin: 18px 0;
+}
+
+.note { background: var(--note-bg); border-color: #0284c7; }
+.success { background: var(--success-bg); border-color: #16a34a; }
+.warning { background: var(--warning-bg); border-color: #d97706; }
+
+.code-title {
+    background: #26394f;
+    color: white;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 7px 7px 0 0;
+    font-size: 14px;
+}
+
+pre {
+    background: var(--code-bg);
+    color: #e4edf7;
+    padding: 18px;
+    overflow-x: auto;
+    border-radius: 0 0 7px 7px;
+    margin: 0 0 18px;
+    font: 14px/1.75 Consolas, "Courier New", monospace;
+    white-space: pre;
+    tab-size: 4;
+}
+
+code { font-family: Consolas, "Courier New", monospace; }
+
+p code, li code, td code {
+    background: #edf2f7;
+    color: #9b2450;
+    padding: 2px 5px;
+    border-radius: 4px;
+    overflow-wrap: anywhere;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 15px;
+}
+
+th, td {
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    padding: 12px;
+}
+
+th { background: #eaf2f9; color: #123c58; }
+tr:nth-child(even) td { background: #fafcff; }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin: 18px 0;
+}
+
+.mini-card {
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    padding: 17px;
+    border-radius: 9px;
+}
+
+.mini-card h3 { margin-top: 0; font-size: 18px; }
+
+.question {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.question:last-child { border-bottom: 0; }
+
+.answer { color: #17603b; margin-top: 5px; }
+
+.small { font-size: 14px; color: var(--muted); }
+
+.footer {
+    background: #102b42;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    margin-top: 35px;
+}
+
+@media (max-width: 700px) {
+    .container { padding: 0 12px; }
+    .card { padding: 17px; }
+    h2 { font-size: 23px; }
+    h3 { font-size: 19px; }
+    .toc ol { columns: 1; }
+    .grid { grid-template-columns: 1fr; }
+    table { font-size: 13px; }
+    th, td { padding: 8px; }
+}
+
+@media print {
+    @page { size: A4; margin: 15mm; }
+
+    body {
+        background: white;
+        color: #111827;
+        font-size: 11pt;
+        line-height: 1.65;
+    }
+
+    header {
+        background: white !important;
+        color: #123c58 !important;
+        border-bottom: 2px solid #123c58;
+        padding: 15px 0;
+    }
+
+    .container { max-width: 100%; padding: 0; margin: 15px 0; }
+    .card { box-shadow: none; border: none; padding: 0; margin-bottom: 22px; }
+    h2, h3, h4 { break-after: avoid; }
+    p, li, tr { orphans: 3; widows: 3; }
+
+    pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        color: #111827;
+        background: #f2f5f8 !important;
+        border: 1px solid #cbd5e1;
+        print-color-adjust: exact;
+    }
+
+    .code-title {
+        background: #e2e8f0 !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+    }
+
+    .note, .success, .warning, th { print-color-adjust: exact; }
+    .footer { background: white; color: #111827; border-top: 1px solid #888; }
+    .card, .mini-card, .note, .success, .warning { break-inside: avoid; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <span class="tag">PYTHON WEB DEVELOPMENT</span>
+    <h1>Module 2: Routing and HTTP Fundamentals</h1>
+    <p>Routes, view functions, dynamic URLs, URL converters, HTTP methods, request-response handling, redirects and URL generation.</p>
+    <p>Learning level: Beginner to practical Flask development</p>
+</header>
+
+<main class="container">
+
+<section class="card" id="contents">
+    <h2>Module Contents</h2>
+    <nav class="toc">
+        <ol>
+            <li><a href="#introduction">Introduction to Routing</a></li>
+            <li><a href="#routes">Routes and URL Rules</a></li>
+            <li><a href="#views">View Functions</a></li>
+            <li><a href="#dynamic">Dynamic URLs</a></li>
+            <li><a href="#converters">URL Converters</a></li>
+            <li><a href="#http">HTTP Fundamentals</a></li>
+            <li><a href="#methods">GET, POST, PUT and DELETE</a></li>
+            <li><a href="#request">Request Object</a></li>
+            <li><a href="#response">Response Object</a></li>
+            <li><a href="#status">HTTP Status Codes</a></li>
+            <li><a href="#redirects">Redirects</a></li>
+            <li><a href="#url-building">URL Generation</a></li>
+            <li><a href="#errors">Common Errors</a></li>
+            <li><a href="#example">Complete Practical Example</a></li>
+            <li><a href="#revision">Revision Notes</a></li>
+            <li><a href="#questions">Practice Questions and Answers</a></li>
+        </ol>
+    </nav>
+</section>
+
+<!-- 1 -->
+
+<section class="card" id="introduction">
+    <h2>1. Introduction to Routing and HTTP</h2>
+
+    <h3>1.1 What Is Routing?</h3>
+    <p>
+        <strong>Routing</strong> is the process of matching an incoming URL
+        and HTTP method to the Python function responsible for handling
+        that request.
+    </p>
+
+    <p>
+        For example, when a user visits <code>/about</code>, a Flask
+        application can execute a function that returns information
+        about the website. When the user visits <code>/products</code>,
+        a different function can return a product list.
+    </p>
+
+    <h3>1.2 What Is a URL?</h3>
+    <p>
+        A URL (Uniform Resource Locator) identifies a resource and
+        describes how it can be accessed.
+    </p>
+
+    <div class="code-title">Example URL</div>
+    <pre><code>https://example.com/products/25?category=books</code></pre>
+
+    <table>
+        <tr><th>Component</th><th>Meaning</th></tr>
+        <tr><td><code>https</code></td><td>Protocol used to communicate with the server.</td></tr>
+        <tr><td><code>example.com</code></td><td>Domain name of the server.</td></tr>
+        <tr><td><code>/products/25</code></td><td>Path identifying the requested resource.</td></tr>
+        <tr><td><code>category=books</code></td><td>Query parameter supplied after the question mark.</td></tr>
+    </table>
+
+    <h3>1.3 How Routing Works</h3>
+    <ol>
+        <li>The client sends an HTTP request to a URL.</li>
+        <li>The request reaches the Flask application.</li>
+        <li>Flask examines the URL path and HTTP method.</li>
+        <li>Flask finds the matching route rule.</li>
+        <li>The registered view function executes.</li>
+        <li>The function returns a valid response.</li>
+        <li>The client receives the response and processes it.</li>
+    </ol>
+
+    <div class="note">
+        <strong>Key idea:</strong> Routing connects a URL to application
+        behaviour. A route does not automatically query a database or
+        render HTML; those operations must be implemented by the view
+        function or supporting code.
+    </div>
+</section>
+
+<!-- 2 -->
+
+<section class="card" id="routes">
+    <h2>2. Routes and URL Rules</h2>
+
+    <h3>2.1 What Is a Route?</h3>
+    <p>
+        A route is a rule registered with Flask that determines which
+        view function handles a particular URL and which HTTP methods
+        are accepted.
+    </p>
+
+    <h3>2.2 Basic Route Syntax</h3>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Welcome to the home page."
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <h3>2.3 Understanding the Syntax</h3>
+    <ul>
+        <li><code>app = Flask(__name__)</code> creates the application instance.</li>
+        <li><code>@app.route("/")</code> registers a route for the root path.</li>
+        <li><code>def home():</code> defines the view function.</li>
+        <li><code>return</code> supplies the response body.</li>
+        <li>The main guard starts the development server when the file is executed directly.</li>
+    </ul>
+
+    <h3>2.4 Creating Multiple Routes</h3>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Home page"
+
+@app.route("/about")
+def about():
+    return "About page"
+
+@app.route("/contact")
+def contact():
+    return "Contact page"
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <table>
+        <tr><th>Path</th><th>View function</th><th>Result</th></tr>
+        <tr><td><code>/</code></td><td><code>home()</code></td><td>Home page</td></tr>
+        <tr><td><code>/about</code></td><td><code>about()</code></td><td>About page</td></tr>
+        <tr><td><code>/contact</code></td><td><code>contact()</code></td><td>Contact page</td></tr>
+    </table>
+
+    <h3>2.5 The Trailing Slash</h3>
+    <p>
+        Flask treats trailing slashes according to its URL routing rules.
+        A route registered with a trailing slash, such as
+        <code>/products/</code>, normally redirects a request for
+        <code>/products</code> to the slash-ending URL. A route registered
+        without the trailing slash, such as <code>/products</code>,
+        normally does not redirect a request for <code>/products/</code>.
+        That request may return 404.
+    </p>
+
+    <h3>2.6 URL Rules and HTTP Methods</h3>
+    <p>
+        A route can accept one or more HTTP methods. If the URL path
+        matches but the request method is not allowed, Flask typically
+        returns <code>405 Method Not Allowed</code>.
+    </p>
+
+    <pre><code>@app.route("/products", methods=["GET"])
+def get_products():
+    return "List of products"</code></pre>
+
+    <p>
+        This route is intended for GET requests. A POST request to the
+        same URL is not accepted by this rule.
+    </p>
+
+    <h3>2.7 Route Naming and Endpoint Names</h3>
+    <p>
+        Flask normally uses the view function's name as its endpoint name.
+        For example, the endpoint for <code>home()</code> is
+        <code>home</code>. Endpoints are important when generating URLs
+        with <code>url_for()</code>.
+    </p>
+
+    <pre><code>@app.route("/about")
+def about():
+    return "About us"
+
+# Endpoint name: "about"</code></pre>
+
+    <p>
+        Flask requires endpoint names to be unique within the application.
+        Registering conflicting endpoint names can cause an error.
+    </p>
+</section>
+
+<!-- 3 -->
+
+<section class="card" id="views">
+    <h2>3. View Functions</h2>
+
+    <h3>3.1 Definition</h3>
+    <p>
+        A <strong>view function</strong> is a Python function registered
+        with a route to handle incoming requests and produce responses.
+        The function can return text, HTML, JSON, a redirect or another
+        supported response type.
+    </p>
+
+    <h3>3.2 A Simple View Function</h3>
+    <pre><code>@app.route("/hello")
+def hello():
+    return "Hello from Flask"</code></pre>
+
+    <p>
+        When a client sends a supported request to <code>/hello</code>,
+        Flask calls <code>hello()</code> and uses the returned string
+        as the response body.
+    </p>
+
+    <h3>3.3 Returning HTML</h3>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/welcome")
+def welcome():
+    return """
+    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+    &lt;head&gt;&lt;title&gt;Welcome&lt;/title&gt;&lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Welcome to Flask&lt;/h1&gt;
+        &lt;p&gt;This is an HTML response.&lt;/p&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+    """
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <p>
+        Flask can return HTML directly. In larger applications, templates
+        are generally easier to maintain than large HTML strings. Templates
+        will be covered in the next module.
+    </p>
+
+    <h3>3.4 Returning JSON</h3>
+    <pre><code>from flask import jsonify
+
+@app.route("/api/status")
+def status():
+    return jsonify({
+        "application": "Flask",
+        "status": "running"
+    })</code></pre>
+
+    <p>
+        <code>jsonify()</code> converts supported Python data into a JSON
+        response and sets an appropriate JSON content type.
+    </p>
+
+    <h3>3.5 View Functions Can Call Other Functions</h3>
+    <pre><code>def calculate_total(price, quantity):
+    return price * quantity
+
+@app.route("/total")
+def total():
+    amount = calculate_total(100, 3)
+    return f"Total amount: {amount}"</code></pre>
+
+    <p>
+        Here, the view function calls a separate Python function to
+        calculate the total. Separating business logic from request
+        handling can make applications easier to test and maintain.
+    </p>
+
+    <h3>3.6 Important Rules for View Functions</h3>
+    <ul>
+        <li>The function must be registered with the intended route.</li>
+        <li>The function must return a supported response value.</li>
+        <li>Dynamic route parameters must match the function's parameters.</li>
+        <li>The function should validate user input before trusting it.</li>
+        <li>Business logic should be separated when that improves readability and testing.</li>
+    </ul>
+
+    <div class="warning">
+        If a view function finishes without returning a valid response,
+        Flask raises an error. A view function must return a valid response
+        or deliberately raise an appropriate exception.
+    </div>
+</section>
+
+<!-- 4 -->
+
+<section class="card" id="dynamic">
+    <h2>4. Dynamic URLs</h2>
+
+    <h3>4.1 What Is a Dynamic URL?</h3>
+    <p>
+        A dynamic URL contains one or more variable segments. These
+        segments allow the same route to handle different resources
+        without creating a separate route for every possible value.
+    </p>
+
+    <p>For example, a website might use:</p>
+    <ul>
+        <li><code>/student/101</code></li>
+        <li><code>/student/102</code></li>
+        <li><code>/student/103</code></li>
+    </ul>
+
+    <p>
+        One dynamic route can handle all three URLs and receive the
+        student identifier as a function argument.
+    </p>
+
+    <h3>4.2 Basic Dynamic Route</h3>
+    <pre><code>@app.route("/student/&lt;student_id&gt;")
+def student(student_id):
+    return f"Student ID: {student_id}"</code></pre>
+
+    <p>
+        In this example, the URL segment is captured as a string by
+        default. Visiting <code>/student/101</code> passes the string
+        <code>"101"</code> to the function.
+    </p>
+
+    <h3>4.3 Multiple Dynamic Parameters</h3>
+    <pre><code>@app.route("/student/&lt;int:student_id&gt;/subject/&lt;subject&gt;")
+def student_subject(student_id, subject):
+    return (
+        f"Student ID: {student_id}, "
+        f"Subject: {subject}"
+    )</code></pre>
+
+    <p>Example URL:</p>
+    <pre><code>/student/101/subject/python</code></pre>
+
+    <p>Result:</p>
+    <pre><code>Student ID: 101, Subject: python</code></pre>
+
+    <h3>4.4 Dynamic URLs in Real Applications</h3>
+    <table>
+        <tr><th>URL pattern</th><th>Purpose</th></tr>
+        <tr><td><code>/products/25</code></td><td>Display product with ID 25.</td></tr>
+        <tr><td><code>/users/101</code></td><td>Display a user profile.</td></tr>
+        <tr><td><code>/orders/5001</code></td><td>Retrieve a particular order.</td></tr>
+        <tr><td><code>/categories/electronics</code></td><td>Display a category.</td></tr>
+        <tr><td><code>/articles/flask-basics</code></td><td>Display an article by slug.</td></tr>
+    </table>
+
+    <h3>4.5 Path Parameters vs Query Parameters</h3>
+    <p>Consider these two URLs:</p>
+    <pre><code>/products/25
+/products?category=electronics</code></pre>
+
+    <p>
+        In the first URL, <code>25</code> is part of the path and can
+        be captured by a dynamic route. In the second URL,
+        <code>category=electronics</code> is a query parameter, usually
+        accessed through Flask's <code>request.args</code>.
+    </p>
+
+    <div class="note">
+        Use path parameters when identifying a resource, such as a product
+        or order. Use query parameters for optional filters, search terms,
+        sorting or pagination when appropriate.
+    </div>
+
+    <h3>4.6 Security Considerations</h3>
+    <p>
+        A dynamic URL parameter is user-controlled input. Capturing an
+        identifier does not prove that the current user has permission
+        to access the corresponding record.
+    </p>
+    <p>
+        For example, an order endpoint must check that the authenticated
+        user owns the order or has the appropriate administrative
+        permission. This is an authorization requirement, not a routing
+        feature.
+    </p>
+</section>
+
+<!-- 5 -->
+
+<section class="card" id="converters">
+    <h2>5. URL Converters</h2>
+
+    <h3>5.1 What Is a URL Converter?</h3>
+    <p>
+        A URL converter specifies the kind of value accepted in a dynamic
+        URL segment. Flask uses the converter to match the route and
+        convert the captured segment to an appropriate Python value.
+    </p>
+
+    <h3>5.2 Common Built-in Converters</h3>
+    <table>
+        <tr><th>Converter</th><th>Purpose</th><th>Example</th></tr>
+        <tr>
+            <td><code>string</code></td>
+            <td>Accepts a non-empty string without a slash. This is the default.</td>
+            <td><code>/user/alex</code></td>
+        </tr>
+        <tr>
+            <td><code>int</code></td>
+            <td>Accepts an integer.</td>
+            <td><code>/product/25</code></td>
+        </tr>
+        <tr>
+            <td><code>float</code></td>
+            <td>Accepts a floating-point number.</td>
+            <td><code>/price/19.99</code></td>
+        </tr>
+        <tr>
+            <td><code>path</code></td>
+            <td>Accepts a string that may include slashes.</td>
+            <td><code>/files/docs/readme.txt</code></td>
+        </tr>
+        <tr>
+            <td><code>uuid</code></td>
+            <td>Accepts a UUID-formatted value.</td>
+            <td><code>/records/550e8400-e29b-41d4-a716-446655440000</code></td>
+        </tr>
+    </table>
+
+    <h3>5.3 Integer Converter</h3>
+    <pre><code>@app.route("/product/&lt;int:product_id&gt;")
+def product(product_id):
+    return f"Product ID: {product_id}"</code></pre>
+
+    <p>
+        Visiting <code>/product/25</code> passes the integer
+        <code>25</code> to the function. A URL such as
+        <code>/product/abc</code> does not match this route and will
+        normally produce a 404 response if no other route matches.
+    </p>
+
+    <h3>5.4 Float Converter</h3>
+    <pre><code>@app.route("/price/&lt;float:amount&gt;")
+def price(amount):
+    return f"Price: {amount}"</code></pre>
+
+    <p>
+        A URL such as <code>/price/19.99</code> passes a floating-point
+        value to the function.
+    </p>
+
+    <div class="warning">
+        Floating-point numbers can introduce precision issues in monetary
+        calculations. For real financial calculations, use integer minor
+        units, such as paise, or an appropriate decimal type rather than
+        relying on binary floating-point arithmetic.
+    </div>
+
+    <h3>5.5 Path Converter</h3>
+    <pre><code>@app.route("/files/&lt;path:filename&gt;")
+def file_info(filename):
+    return f"Requested path: {filename}"</code></pre>
+
+    <p>
+        A request to <code>/files/docs/readme.txt</code> can pass
+        <code>docs/readme.txt</code> as the value of
+        <code>filename</code>.
+    </p>
+
+    <p>
+        Accepting a path parameter does not make it safe to open that
+        path directly from the filesystem. File access must be carefully
+        restricted to prevent path traversal and unauthorized access.
+    </p>
+
+    <h3>5.6 UUID Converter</h3>
+    <pre><code>@app.route("/records/&lt;uuid:record_id&gt;")
+def record(record_id):
+    return f"Record ID: {record_id}"</code></pre>
+
+    <p>
+        A UUID converter is useful when routes identify records using
+        universally unique identifier values.
+    </p>
+
+    <h3>5.7 Comparison: Dynamic Parameter Types</h3>
+    <pre><code>@app.route("/name/&lt;name&gt;")
+def name_page(name):
+    return f"Name: {name}"
+
+@app.route("/age/&lt;int:age&gt;")
+def age_page(age):
+    return f"Age: {age}"</code></pre>
+
+    <p>
+        The first route receives a string. The second route receives
+        an integer. Using the correct converter makes route behaviour
+        clearer and rejects values that do not match the expected format.
+    </p>
+</section>
+
+<!-- 6 -->
+
+<section class="card" id="http">
+    <h2>6. HTTP Fundamentals</h2>
+
+    <h3>6.1 What Is HTTP?</h3>
+    <p>
+        <strong>HTTP</strong> stands for Hypertext Transfer Protocol.
+        It is an application-layer protocol used for communication
+        between clients and servers.
+    </p>
+
+    <p>
+        A client may be a web browser, React frontend, mobile application
+        or another service. A server receives requests and sends responses.
+    </p>
+
+    <h3>6.2 What Is HTTPS?</h3>
+    <p>
+        HTTPS is HTTP communication protected by TLS. It helps provide
+        confidentiality, integrity and server authentication when correctly
+        configured and validated.
+    </p>
+
+    <h3>6.3 The Request-Response Cycle</h3>
+    <ol>
+        <li>The client constructs an HTTP request.</li>
+        <li>The request includes a method, URL, headers and optionally a body.</li>
+        <li>The server receives and processes the request.</li>
+        <li>The application determines the appropriate result.</li>
+        <li>The server returns a status code, headers and optionally a body.</li>
+        <li>The client interprets the response.</li>
+    </ol>
+
+    <h3>6.4 Components of an HTTP Request</h3>
+    <table>
+        <tr><th>Component</th><th>Purpose</th></tr>
+        <tr><td>Method</td><td>Describes the intended action, such as GET or POST.</td></tr>
+        <tr><td>URL</td><td>Identifies the requested resource.</td></tr>
+        <tr><td>Headers</td><td>Provide metadata, such as content type and authentication credentials.</td></tr>
+        <tr><td>Body</td><td>Contains submitted data when required.</td></tr>
+    </table>
+
+    <h3>6.5 Components of an HTTP Response</h3>
+    <table>
+        <tr><th>Component</th><th>Purpose</th></tr>
+        <tr><td>Status code</td><td>Indicates the outcome of the request.</td></tr>
+        <tr><td>Headers</td><td>Describe the response and its content.</td></tr>
+        <tr><td>Body</td><td>Contains returned HTML, JSON, text or other content, if applicable.</td></tr>
+    </table>
+
+    <h3>6.6 Example HTTP Exchange</h3>
+    <p>Request:</p>
+    <pre><code>GET /api/status HTTP/1.1
+Host: example.com
+Accept: application/json</code></pre>
+
+    <p>Possible response:</p>
+    <pre><code>HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"status": "running"}</code></pre>
+
+    <p>
+        This illustrates the general format. Real requests and responses
+        can contain additional headers and may use HTTP/2 or HTTP/3.
+    </p>
+</section>
+
+<!-- 7 -->
+
+<section class="card" id="methods">
+    <h2>7. HTTP Methods: GET, POST, PUT and DELETE</h2>
+
+    <h3>7.1 What Is an HTTP Method?</h3>
+    <p>
+        An HTTP method describes the intended operation for a request.
+        The method is important because the same URL can support different
+        operations.
+    </p>
+
+    <h3>7.2 GET</h3>
+    <p>
+        <strong>GET</strong> is used to retrieve a resource. A properly
+        designed GET endpoint should not change the application's state
+        as a result of the requested operation.
+    </p>
+
+    <pre><code>@app.route("/products", methods=["GET"])
+def get_products():
+    products = ["Laptop", "Phone", "Keyboard"]
+    return {"products": products}</code></pre>
+
+    <p>
+        Flask converts supported returned dictionaries to JSON responses.
+        GET requests commonly return lists, individual records or page data.
+    </p>
+
+    <h3>7.3 POST</h3>
+    <p>
+        <strong>POST</strong> is commonly used to submit data or create a
+        resource. For example, a frontend may submit a new product or user
+        registration form.
+    </p>
+
+    <pre><code>from flask import request
+
+@app.route("/products", methods=["POST"])
+def create_product():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "A JSON object is required"}, 400
+
+    name = data.get("name")
+
+    if not isinstance(name, str) or not name.strip():
+        return {"error": "Product name is required"}, 400
+
+    return {
+        "message": "Product data received",
+        "name": name.strip()
+    }, 201</code></pre>
+
+    <p>
+        This example validates a basic input field. It does not save a
+        product to a database. A real application would also validate
+        other fields, enforce permissions and persist the data.
+    </p>
+
+    <h3>7.4 PUT</h3>
+    <p>
+        <strong>PUT</strong> is commonly used to create or replace the
+        state of a resource at a known URL. PUT is defined as idempotent:
+        repeating the same request should have the same intended effect
+        as making it once.
+    </p>
+
+    <pre><code>@app.route("/products/&lt;int:product_id&gt;", methods=["PUT"])
+def replace_product(product_id):
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "A JSON object is required"}, 400
+
+    return {
+        "message": "Replacement data received",
+        "product_id": product_id,
+        "product": data
+    }</code></pre>
+
+    <p>
+        This is an illustrative route. It does not actually replace
+        a database record.
+    </p>
+
+    <h3>7.5 DELETE</h3>
+    <p>
+        <strong>DELETE</strong> requests the removal of a resource.
+        The server must check that the resource exists and that the
+        client is authorized to remove it.
+    </p>
+
+    <pre><code>@app.route("/products/&lt;int:product_id&gt;", methods=["DELETE"])
+def delete_product(product_id):
+    # A real application must delete the record here.
+    return {
+        "message": "Deletion endpoint reached",
+        "product_id": product_id
+    }</code></pre>
+
+    <p>
+        This example demonstrates routing only. It does not delete
+        anything from a database.
+    </p>
+
+    <h3>7.6 Comparison of HTTP Methods</h3>
+    <table>
+        <tr><th>Method</th><th>Typical purpose</th><th>Safe?</th><th>Idempotent?</th></tr>
+        <tr><td>GET</td><td>Retrieve data</td><td>Yes, by definition</td><td>Yes</td></tr>
+        <tr><td>POST</td><td>Submit data or create a resource</td><td>No</td><td>Not generally</td></tr>
+        <tr><td>PUT</td><td>Create or replace a resource at a known URL</td><td>No</td><td>Yes</td></tr>
+        <tr><td>DELETE</td><td>Request resource deletion</td><td>No</td><td>Yes</td></tr>
+    </table>
+
+    <p>
+        A safe method is intended not to change server state as part of
+        the requested operation. Idempotence means repeated identical
+        requests have the same intended effect as a single request.
+        Responses can differ even when an operation is idempotent.
+    </p>
+
+    <h3>7.7 Registering Multiple Methods in Flask</h3>
+    <pre><code>@app.route("/items", methods=["GET", "POST"])
+def items():
+    if request.method == "POST":
+        return {"message": "Create operation"}
+
+    return {"items": []}</code></pre>
+
+    <p>
+        This example selects behaviour based on the request method.
+        For larger APIs, separate functions or carefully structured
+        route handlers may improve readability.
+    </p>
+
+    <h3>7.8 The HEAD and OPTIONS Methods</h3>
+    <p>
+        Flask normally adds HEAD and OPTIONS handling for routes
+        registered with <code>@app.route()</code>, unless configured
+        otherwise. HEAD is similar to GET but does not return a response
+        body. OPTIONS is used to discover communication options and
+        is also relevant to CORS preflight requests.
+    </p>
+
+    <h3>7.9 Testing Methods</h3>
+    <p>
+        Browser address bars normally send GET requests. To test POST,
+        PUT and DELETE endpoints, use a tool such as curl, Postman or
+        the Flask test client.
+    </p>
+
+    <pre><code>curl http://127.0.0.1:5000/products
+
+curl -X POST http://127.0.0.1:5000/products ^
+  -H "Content-Type: application/json" ^
+  -d "{\"name\":\"Keyboard\"}"</code></pre>
+
+    <p class="small">
+        The line continuation shown above uses Windows Command Prompt
+        syntax. PowerShell and Unix-like terminals have different
+        continuation conventions.
+    </p>
+</section>
+
+<!-- 8 -->
+
+<section class="card" id="request">
+    <h2>8. Request Object</h2>
+
+    <h3>8.1 What Is the Request Object?</h3>
+    <p>
+        Flask's <code>request</code> object provides information about
+        the current incoming HTTP request. It includes details such as
+        the method, path, query parameters, headers, form fields and
+        request body.
+    </p>
+
+    <pre><code>from flask import request</code></pre>
+
+    <h3>8.2 Reading the HTTP Method and Path</h3>
+    <pre><code>@app.route("/request-info")
+def request_info():
+    return {
+        "method": request.method,
+        "path": request.path
+    }</code></pre>
+
+    <p>
+        If the client sends a GET request to
+        <code>/request-info</code>, the response includes the method
+        and path of that request.
+    </p>
+
+    <h3>8.3 Query Parameters: request.args</h3>
+    <p>Example URL:</p>
+    <pre><code>/search?q=flask&amp;page=2</code></pre>
+
+    <p>Example route:</p>
+    <pre><code>@app.route("/search")
+def search():
+    query = request.args.get("q", "")
+    page = request.args.get("page", default=1, type=int)
+
+    return {
+        "query": query,
+        "page": page
+    }</code></pre>
+
+    <p>
+        <code>request.args</code> contains query-string parameters.
+        The <code>get()</code> method supports a default value and,
+        when requested, type conversion.
+    </p>
+
+    <h3>8.4 Reading Form Data: request.form</h3>
+    <p>
+        When a client submits a standard HTML form using a supported
+        form content type, the form fields can be accessed using
+        <code>request.form</code>.
+    </p>
+
+    <pre><code>@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "")
+        return {"username_received": username}
+
+    return "Submit a login form using POST"</code></pre>
+
+    <p>
+        This is only a form-data demonstration. A real login system must
+        authenticate credentials securely and must not reveal passwords
+        or sensitive information in its responses.
+    </p>
+
+    <h3>8.5 Reading JSON: request.get_json()</h3>
+    <pre><code>@app.route("/api/data", methods=["POST"])
+def receive_data():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "Expected a JSON object"}, 400
+
+    return {"received": data}</code></pre>
+
+    <p>
+        JSON requests should normally use the header
+        <code>Content-Type: application/json</code>. The returned
+        data must still be validated before it is used.
+    </p>
+
+    <h3>8.6 Reading Headers</h3>
+    <pre><code>@app.route("/headers")
+def headers():
+    user_agent = request.headers.get("User-Agent", "Unknown")
+
+    return {"user_agent": user_agent}</code></pre>
+
+    <p>
+        Headers contain metadata. Some headers may be supplied or
+        manipulated by clients, so they must not automatically be
+        treated as trusted proof of identity or authorization.
+    </p>
+
+    <h3>8.7 Important Request Attributes</h3>
+    <table>
+        <tr><th>Attribute or method</th><th>Purpose</th></tr>
+        <tr><td><code>request.method</code></td><td>HTTP method of the request.</td></tr>
+        <tr><td><code>request.path</code></td><td>Request path without the query string.</td></tr>
+        <tr><td><code>request.args</code></td><td>Query-string parameters.</td></tr>
+        <tr><td><code>request.form</code></td><td>Submitted form fields.</td></tr>
+        <tr><td><code>request.get_json()</code></td><td>Parses a JSON request body when appropriate.</td></tr>
+        <tr><td><code>request.headers</code></td><td>Request headers.</td></tr>
+        <tr><td><code>request.cookies</code></td><td>Cookies sent by the client.</td></tr>
+        <tr><td><code>request.files</code></td><td>Uploaded files in multipart form requests.</td></tr>
+        <tr><td><code>request.remote_addr</code></td><td>Address of the direct peer, which may be a proxy.</td></tr>
+    </table>
+
+    <div class="warning">
+        The request object represents the current request context.
+        Do not treat request-specific data as global user state or
+        store it for use in an unrelated future request.
+    </div>
+</section>
+
+<!-- 9 -->
+
+<section class="card" id="response">
+    <h2>9. Response Object</h2>
+
+    <h3>9.1 What Is a Response?</h3>
+    <p>
+        A response is the result sent by the server to the client after
+        processing a request. It contains a status code, headers and,
+        when applicable, a response body.
+    </p>
+
+    <h3>9.2 Returning Plain Text</h3>
+    <pre><code>@app.route("/message")
+def message():
+    return "Hello from the server"</code></pre>
+
+    <h3>9.3 Returning a Dictionary as JSON</h3>
+    <pre><code>@app.route("/api/user")
+def user():
+    return {
+        "id": 1,
+        "name": "Alex"
+    }</code></pre>
+
+    <p>
+        Flask supports returning a dictionary or list as JSON from
+        a view function in modern versions. For more explicit control,
+        use <code>jsonify()</code>.
+    </p>
+
+    <h3>9.4 Returning a Custom Status Code</h3>
+    <pre><code>@app.route("/created")
+def created():
+    return {"message": "Resource created"}, 201</code></pre>
+
+    <p>
+        The tuple specifies the response body and status code.
+        A status code of 201 means Created.
+    </p>
+
+    <h3>9.5 Setting Response Headers</h3>
+    <pre><code>from flask import make_response
+
+@app.route("/custom-response")
+def custom_response():
+    response = make_response(
+        {"message": "Custom response"},
+        200
+    )
+
+    response.headers["X-App-Name"] = "FlaskDemo"
+    return response</code></pre>
+
+    <p>
+        <code>make_response()</code> creates a response object that
+        can be modified before being returned.
+    </p>
+
+    <h3>9.6 Content-Type</h3>
+    <p>
+        The <code>Content-Type</code> response header indicates the
+        media type of the returned body. Examples include
+        <code>text/html</code>, <code>text/plain</code> and
+        <code>application/json</code>.
+    </p>
+
+    <p>
+        Returning a Flask dictionary or using <code>jsonify()</code>
+        automatically sets a JSON content type.
+    </p>
+
+    <h3>9.7 Request vs Response</h3>
+    <table>
+        <tr><th>Request</th><th>Response</th></tr>
+        <tr><td>Sent by the client.</td><td>Sent by the server.</td></tr>
+        <tr><td>Contains method, URL, headers and optional body.</td><td>Contains status code, headers and optional body.</td></tr>
+        <tr><td>Flask reads it through <code>request</code>.</td><td>Flask constructs it from a view function's return value or a response object.</td></tr>
+        <tr><td>May contain form data, JSON or query parameters.</td><td>May contain HTML, JSON, text, a file or no body.</td></tr>
+    </table>
+</section>
+
+<!-- 10 -->
+
+<section class="card" id="status">
+    <h2>10. Important HTTP Status Codes</h2>
+
+    <h3>10.1 What Is a Status Code?</h3>
+    <p>
+        An HTTP status code is a three-digit number indicating the result
+        of an HTTP request.
+    </p>
+
+    <table>
+        <tr><th>Code</th><th>Name</th><th>Meaning</th></tr>
+        <tr><td>200</td><td>OK</td><td>The request succeeded.</td></tr>
+        <tr><td>201</td><td>Created</td><td>A resource was created successfully.</td></tr>
+        <tr><td>204</td><td>No Content</td><td>The request succeeded and the response has no body.</td></tr>
+        <tr><td>301</td><td>Moved Permanently</td><td>The resource has a permanent redirect.</td></tr>
+        <tr><td>302</td><td>Found</td><td>A temporary redirect commonly used by web applications.</td></tr>
+        <tr><td>303</td><td>See Other</td><td>Directs the client to retrieve another resource, commonly using GET.</td></tr>
+        <tr><td>400</td><td>Bad Request</td><td>The request is invalid or cannot be processed as submitted.</td></tr>
+        <tr><td>401</td><td>Unauthorized</td><td>Authentication is required or has failed.</td></tr>
+        <tr><td>403</td><td>Forbidden</td><td>The server refuses the requested action.</td></tr>
+        <tr><td>404</td><td>Not Found</td><td>The requested resource or route was not found.</td></tr>
+        <tr><td>405</td><td>Method Not Allowed</td><td>The route does not allow the request method.</td></tr>
+        <tr><td>409</td><td>Conflict</td><td>The request conflicts with the current resource state.</td></tr>
+        <tr><td>415</td><td>Unsupported Media Type</td><td>The server does not support the request body's media type for that operation.</td></tr>
+        <tr><td>422</td><td>Unprocessable Content</td><td>The content is understood but cannot be processed as submitted.</td></tr>
+        <tr><td>429</td><td>Too Many Requests</td><td>The client has sent too many requests in a given period.</td></tr>
+        <tr><td>500</td><td>Internal Server Error</td><td>The server encountered an unexpected condition.</td></tr>
+        <tr><td>503</td><td>Service Unavailable</td><td>The server is temporarily unable to handle the request.</td></tr>
+    </table>
+
+    <h3>10.2 Status Code Categories</h3>
+    <ul>
+        <li><strong>1xx — Informational:</strong> The request is being processed.</li>
+        <li><strong>2xx — Success:</strong> The request succeeded.</li>
+        <li><strong>3xx — Redirection:</strong> Further action is needed to complete the request.</li>
+        <li><strong>4xx — Client errors:</strong> There is a problem with the request or the requested operation.</li>
+        <li><strong>5xx — Server errors:</strong> The server failed to fulfil a valid request.</li>
+    </ul>
+
+    <h3>10.3 Returning an Error Status</h3>
+    <pre><code>@app.route("/example-error")
+def example_error():
+    return {"error": "Invalid input"}, 400</code></pre>
+
+    <p>
+        A suitable status code helps the client understand what happened
+        and decide how to respond.
+    </p>
+</section>
+
+<!-- 11 -->
+
+<section class="card" id="redirects">
+    <h2>11. Redirects in Flask</h2>
+
+    <h3>11.1 What Is a Redirect?</h3>
+    <p>
+        A redirect tells the client to make a request to another URL.
+        It is useful when a user should move to another page after an
+        operation or when a resource has moved.
+    </p>
+
+    <h3>11.2 Using redirect()</h3>
+    <pre><code>from flask import redirect
+
+@app.route("/old-page")
+def old_page():
+    return redirect("/new-page")
+
+@app.route("/new-page")
+def new_page():
+    return "Welcome to the new page"</code></pre>
+
+    <p>
+        Visiting <code>/old-page</code> returns a redirect response.
+        The browser then follows the redirect to <code>/new-page</code>
+        under normal redirect-following behaviour.
+    </p>
+
+    <h3>11.3 Using url_for() with Redirects</h3>
+    <pre><code>from flask import redirect, url_for
+
+@app.route("/home")
+def home():
+    return "Home"
+
+@app.route("/go-home")
+def go_home():
+    return redirect(url_for("home"))</code></pre>
+
+    <p>
+        This approach generates the destination URL from the registered
+        endpoint name instead of manually writing the URL path.
+    </p>
+
+    <h3>11.4 Redirect Status Codes</h3>
+    <table>
+        <tr><th>Status</th><th>General meaning</th></tr>
+        <tr><td>301</td><td>Permanent redirect.</td></tr>
+        <tr><td>302</td><td>Temporary redirect; the default used by Flask's redirect helper unless configured otherwise.</td></tr>
+        <tr><td>303</td><td>Directs the client to retrieve another URL, typically with GET.</td></tr>
+        <tr><td>307</td><td>Temporary redirect that preserves the request method.</td></tr>
+        <tr><td>308</td><td>Permanent redirect that preserves the request method.</td></tr>
+    </table>
+
+    <h3>11.5 The Post/Redirect/Get Pattern</h3>
+    <p>
+        After successfully processing a form submission, a web application
+        can redirect the client to a result page. This is commonly known
+        as the Post/Redirect/Get (PRG) pattern.
+    </p>
+
+    <pre><code>from flask import Flask, request, redirect, url_for
+
+app = Flask(__name__)
+
+@app.route("/submit", methods=["GET", "POST"])
+def submit():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+
+        # A real application should validate and save the data.
+        return redirect(url_for("success", name=name))
+
+    return """
+    &lt;form method="post"&gt;
+        &lt;input name="name" required&gt;
+        &lt;button type="submit"&gt;Submit&lt;/button&gt;
+    &lt;/form&gt;
+    """
+
+@app.route("/success")
+def success():
+    name = request.args.get("name", "")
+    return f"Submission received for {name}"</code></pre>
+
+    <div class="warning">
+        This simplified demonstration puts the name in the query string.
+        Do not put passwords, payment details or sensitive personal data
+        into redirect URLs. In a real application, validate input and
+        store submitted information appropriately.
+    </div>
+
+    <h3>11.6 Redirect Security</h3>
+    <p>
+        Be careful when redirecting to a destination supplied by the user.
+        Unvalidated external redirect targets can be abused for phishing.
+        Prefer known endpoint names or validate external destinations
+        against a strict allowlist.
+    </p>
+</section>
+
+<!-- 12 -->
+
+<section class="card" id="url-building">
+    <h2>12. URL Generation with url_for()</h2>
+
+    <h3>12.1 What Is url_for()?</h3>
+    <p>
+        Flask's <code>url_for()</code> function builds a URL using a
+        registered endpoint name and any required route parameters.
+        It reduces the need to hardcode URL paths throughout the code.
+    </p>
+
+    <h3>12.2 Basic Example</h3>
+    <pre><code>from flask import Flask, url_for
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Home page"
+
+@app.route("/about")
+def about():
+    return "About page"
+
+@app.route("/show-url")
+def show_url():
+    return url_for("about")</code></pre>
+
+    <p>
+        When <code>/show-url</code> is requested, the response body
+        contains the generated URL for the <code>about</code> endpoint,
+        normally <code>/about</code>.
+    </p>
+
+    <h3>12.3 Why Is url_for() Useful?</h3>
+    <ul>
+        <li>It avoids repeating hardcoded URL paths.</li>
+        <li>It can adapt when a route's path changes.</li>
+        <li>It supports dynamic route parameters.</li>
+        <li>It can generate URLs for endpoints in Blueprints.</li>
+        <li>It helps construct internal links and redirect destinations.</li>
+    </ul>
+
+    <h3>12.4 Generating a Dynamic URL</h3>
+    <pre><code>@app.route("/user/&lt;int:user_id&gt;")
+def user_profile(user_id):
+    return f"User ID: {user_id}"
+
+@app.route("/profile-link")
+def profile_link():
+    profile_url = url_for("user_profile", user_id=25)
+    return profile_url</code></pre>
+
+    <p>
+        The generated path is normally <code>/user/25</code>.
+        The keyword argument name must match the dynamic parameter
+        defined in the route.
+    </p>
+
+    <h3>12.5 Adding Query Parameters</h3>
+    <pre><code>@app.route("/search")
+def search():
+    return "Search page"
+
+@app.route("/search-link")
+def search_link():
+    return url_for(
+        "search",
+        q="flask",
+        page=2
+    )</code></pre>
+
+    <p>
+        The generated URL includes a query string, typically
+        <code>/search?q=flask&amp;page=2</code>. Flask encodes query
+        parameter values as needed.
+    </p>
+
+    <h3>12.6 url_for() in HTML Templates</h3>
+    <p>
+        Flask integrates with Jinja templates. Inside a template,
+        use <code>url_for()</code> to generate internal links:
+    </p>
+
+    <pre><code>&lt;a href="{{ url_for('home') }}"&gt;Home&lt;/a&gt;
+
+&lt;a href="{{ url_for('user_profile', user_id=25) }}"&gt;
+    View User
+&lt;/a&gt;</code></pre>
+
+    <p>
+        These expressions are written inside a Jinja template, not
+        directly in an ordinary Python string unless you deliberately
+        render the template.
+    </p>
+
+    <h3>12.7 Endpoint Name vs URL Path</h3>
+    <table>
+        <tr><th>Concept</th><th>Example</th></tr>
+        <tr><td>Endpoint name</td><td><code>user_profile</code></td></tr>
+        <tr><td>Registered path</td><td><code>/user/&lt;int:user_id&gt;</code></td></tr>
+        <tr><td>Generated path</td><td><code>/user/25</code></td></tr>
+    </table>
+
+    <p>
+        The endpoint is the name Flask uses to identify a registered
+        view. The URL path is the route pattern used by the client.
+        These are related, but they are not the same thing.
+    </p>
+
+    <h3>12.8 External URLs</h3>
+    <p>
+        When needed, <code>url_for()</code> can generate an absolute URL:
+    </p>
+
+    <pre><code>url_for("home", _external=True)</code></pre>
+
+    <p>
+        The host and scheme depend on the request and application
+        configuration. In production, configure trusted hosts and
+        proxy handling appropriately before relying on generated
+        absolute URLs.
+    </p>
+</section>
+
+<!-- 13 -->
+
+<section class="card" id="errors">
+    <h2>13. Common Routing and HTTP Errors</h2>
+
+    <h3>13.1 404 Not Found</h3>
+    <p><strong>Cause:</strong> The requested path does not match a registered route or available resource.</p>
+    <p><strong>Solution:</strong> Check the URL spelling, route definition and dynamic parameter format.</p>
+
+    <h3>13.2 405 Method Not Allowed</h3>
+    <p><strong>Cause:</strong> The URL matches a route, but the request method is not allowed by the registered rules.</p>
+    <p><strong>Solution:</strong> Check the route's <code>methods</code> argument and the method used by the client.</p>
+
+    <h3>13.3 Endpoint BuildError</h3>
+    <p><strong>Cause:</strong> <code>url_for()</code> refers to an unknown endpoint or is missing a required dynamic parameter.</p>
+    <p><strong>Solution:</strong> Check the view function's endpoint name and provide the required route arguments.</p>
+
+    <pre><code># Route
+@app.route("/product/&lt;int:product_id&gt;")
+def product(product_id):
+    return str(product_id)
+
+# Correct
+url_for("product", product_id=10)
+
+# Incorrect: required parameter is missing
+# url_for("product")</code></pre>
+
+    <h3>13.4 View Function Returns Nothing</h3>
+    <p>
+        A view function that reaches the end without returning a valid
+        response causes Flask to raise an error.
+    </p>
+    <pre><code># Incorrect
+@app.route("/bad")
+def bad():
+    message = "Hello"
+
+# Correct
+@app.route("/good")
+def good():
+    return "Hello"</code></pre>
+
+    <h3>13.5 Dynamic Parameter Mismatch</h3>
+    <pre><code># Correct
+@app.route("/user/&lt;int:user_id&gt;")
+def user(user_id):
+    return str(user_id)</code></pre>
+
+    <p>
+        Flask passes the dynamic parameter to the function by name.
+        Make sure the function accepts the corresponding argument.
+    </p>
+
+    <h3>13.6 JSON Parsing Problems</h3>
+    <p>
+        If a JSON endpoint receives an unexpected content type or
+        malformed JSON, parsing may fail. Validate the input format
+        and return a suitable 4xx response instead of silently
+        accepting invalid data.
+    </p>
+
+    <h3>13.7 Duplicate Endpoint Names</h3>
+    <p>
+        Flask normally uses function names as endpoint names. Two
+        different view functions registered under conflicting endpoint
+        names can cause an application setup error. Use distinct
+        function names or explicit, unique endpoint names.
+    </p>
+</section>
+
+<!-- 14 -->
+
+<section class="card" id="example">
+    <h2>14. Complete Practical Example: Student API</h2>
+
+    <p>
+        The following example combines routing, dynamic URLs, request
+        handling, HTTP methods, JSON responses, status codes and
+        URL generation in a single file.
+    </p>
+
+    <div class="code-title">app.py</div>
+    <pre><code>from flask import Flask, request, url_for
+
+app = Flask(__name__)
+
+# In-memory example data.
+# Data will reset when the application restarts.
+students = {
+    1: {"id": 1, "name": "Aarav"},
+    2: {"id": 2, "name": "Riya"}
+}
+
+@app.route("/", methods=["GET"])
+def home():
+    return {
+        "message": "Student API is running",
+        "students_url": url_for("get_students")
+    }
+
+
+@app.route("/students", methods=["GET"])
+def get_students():
+    return {
+        "students": list(students.values())
+    }
+
+
+@app.route("/students/&lt;int:student_id>", methods=["GET"])
+def get_student(student_id):
+    student = students.get(student_id)
+
+    if student is None:
+        return {"error": "Student not found"}, 404
+
+    return student
+
+
+@app.route("/students", methods=["POST"])
+def create_student():
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "Expected a JSON object"}, 400
+
+    name = data.get("name")
+
+    if not isinstance(name, str) or not name.strip():
+        return {"error": "Name is required"}, 400
+
+    new_id = max(students.keys(), default=0) + 1
+
+    student = {
+        "id": new_id,
+        "name": name.strip()
+    }
+
+    students[new_id] = student
+
+    return student, 201
+
+
+@app.route("/students/&lt;int:student_id>", methods=["PUT"])
+def update_student(student_id):
+    student = students.get(student_id)
+
+    if student is None:
+        return {"error": "Student not found"}, 404
+
+    data = request.get_json(silent=True)
+
+    if not isinstance(data, dict):
+        return {"error": "Expected a JSON object"}, 400
+
+    name = data.get("name")
+
+    if not isinstance(name, str) or not name.strip():
+        return {"error": "Name is required"}, 400
+
+    student["name"] = name.strip()
+
+    return student, 200
+
+
+@app.route("/students/&lt;int:student_id>", methods=["DELETE"])
+def delete_student(student_id):
+    student = students.pop(student_id, None)
+
+    if student is None:
+        return {"error": "Student not found"}, 404
+
+    return "", 204
+
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <h3>14.1 How to Run the Example</h3>
+    <ol>
+        <li>Activate your virtual environment.</li>
+        <li>Install Flask if it is not already installed.</li>
+        <li>Save the code in <code>app.py</code>.</li>
+        <li>Run <code>python app.py</code>.</li>
+        <li>Open <code>http://127.0.0.1:5000</code> in your browser.</li>
+        <li>Use Postman, curl or a test client to send POST, PUT and DELETE requests.</li>
+    </ol>
+
+    <h3>14.2 Available Endpoints</h3>
+    <table>
+        <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+        <tr><td>GET</td><td><code>/</code></td><td>Display API information.</td></tr>
+        <tr><td>GET</td><td><code>/students</code></td><td>Retrieve all students.</td></tr>
+        <tr><td>GET</td><td><code>/students/1</code></td><td>Retrieve student 1.</td></tr>
+        <tr><td>POST</td><td><code>/students</code></td><td>Create a student.</td></tr>
+        <tr><td>PUT</td><td><code>/students/1</code></td><td>Update student 1.</td></tr>
+        <tr><td>DELETE</td><td><code>/students/1</code></td><td>Delete student 1.</td></tr>
+    </table>
+
+    <h3>14.3 Example POST Request</h3>
+    <p>Send a POST request to <code>/students</code> with the header:</p>
+    <pre><code>Content-Type: application/json</code></pre>
+
+    <p>Request body:</p>
+    <pre><code>{
+    "name": "Deb"
+}</code></pre>
+
+    <p>
+        The server creates an in-memory student record and returns it
+        with status code 201.
+    </p>
+
+    <h3>14.4 Important Limitations</h3>
+    <ul>
+        <li>The example uses in-memory storage rather than a database.</li>
+        <li>All records are lost when the application restarts.</li>
+        <li>It does not implement authentication or authorization.</li>
+        <li>It does not implement database transactions or persistent IDs.</li>
+        <li>The example is for learning and is not a production-ready student management system.</li>
+    </ul>
+
+    <div class="warning">
+        Do not expose this example as a public production API. Add
+        authentication, authorization, database persistence, robust
+        validation, error handling and production deployment controls
+        before using it for real users.
+    </div>
+</section>
+
+<!-- 15 -->
+
+<section class="card" id="revision">
+    <h2>15. Quick Revision Notes</h2>
+
+    <ul>
+        <li>Routing maps an incoming URL and HTTP method to a view function.</li>
+        <li><code>@app.route()</code> registers a route rule.</li>
+        <li>A view function returns a valid HTTP response.</li>
+        <li>Dynamic URLs capture values from URL path segments.</li>
+        <li><code>&lt;int:id&gt;</code> captures an integer route parameter.</li>
+        <li><code>&lt;path:name&gt;</code> can capture a path containing slashes.</li>
+        <li>GET retrieves data; POST submits data or creates resources.</li>
+        <li>PUT commonly replaces a resource; DELETE requests its removal.</li>
+        <li>GET is safe and idempotent; PUT and DELETE are idempotent by definition.</li>
+        <li><code>request.args</code> reads query parameters.</li>
+        <li><code>request.form</code> reads standard submitted form fields.</li>
+        <li><code>request.get_json()</code> parses JSON request bodies.</li>
+        <li><code>jsonify()</code> creates a JSON response.</li>
+        <li>HTTP status 200 means OK; 201 means Created.</li>
+        <li>HTTP status 400 indicates a bad request; 404 means not found.</li>
+        <li>HTTP status 405 means the request method is not allowed.</li>
+        <li><code>redirect()</code> returns a redirect response.</li>
+        <li><code>url_for()</code> builds a URL from an endpoint name.</li>
+        <li>Use <code>url_for()</code> instead of hardcoding internal paths where practical.</li>
+        <li>Always validate user input and enforce authorization for protected resources.</li>
+    </ul>
+
+    <h3>Important Syntax to Remember</h3>
+    <pre><code>@app.route("/")
+def home():
+    return "Hello"
+
+@app.route("/user/&lt;int:user_id&gt;")
+def user(user_id):
+    return {"user_id": user_id}
+
+request.args.get("page", default=1, type=int)
+
+data = request.get_json(silent=True)
+
+return {"message": "Created"}, 201
+
+return redirect(url_for("home"))</code></pre>
+</section>
+
+<!-- 16 -->
+
+<section class="card" id="questions">
+    <h2>16. Practice Questions with Answers</h2>
+
+    <h3>Part A: Short-Answer Questions</h3>
+
+    <div class="question">
+        <strong>Q1. What is routing in Flask?</strong>
+        <p class="answer">Answer: Routing maps URL paths and HTTP methods to view functions.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q2. What is a view function?</strong>
+        <p class="answer">Answer: A Python function that handles a request and returns a valid response.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q3. What is a dynamic URL?</strong>
+        <p class="answer">Answer: A URL containing variable path segments that can be passed to a view function.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q4. What is a URL converter?</strong>
+        <p class="answer">Answer: A route component that restricts and converts the type of a captured URL segment.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q5. What does the int converter do?</strong>
+        <p class="answer">Answer: It accepts an integer path segment and passes the converted integer to the view function.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q6. What is HTTP?</strong>
+        <p class="answer">Answer: HTTP is an application-layer protocol for communication between clients and servers.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q7. What is the difference between a request and a response?</strong>
+        <p class="answer">Answer: A request is sent by a client; a response is returned by a server.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q8. What is the purpose of GET?</strong>
+        <p class="answer">Answer: GET retrieves a resource without intending to change server state.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q9. What is the purpose of POST?</strong>
+        <p class="answer">Answer: POST submits data or requests processing, often to create a resource.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q10. What is the purpose of PUT?</strong>
+        <p class="answer">Answer: PUT commonly creates or replaces a resource at a known URL.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q11. What is the purpose of DELETE?</strong>
+        <p class="answer">Answer: DELETE requests removal of a specified resource.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q12. What is request.args?</strong>
+        <p class="answer">Answer: It provides access to query-string parameters.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q13. What is request.form?</strong>
+        <p class="answer">Answer: It provides access to submitted form fields.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q14. What is jsonify()?</strong>
+        <p class="answer">Answer: A Flask helper that creates a JSON response.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q15. What does HTTP status 404 mean?</strong>
+        <p class="answer">Answer: The requested resource or route was not found.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q16. What does HTTP status 405 mean?</strong>
+        <p class="answer">Answer: The request method is not allowed for the matched route.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q17. What does redirect() do?</strong>
+        <p class="answer">Answer: It creates a response that directs the client to another URL.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q18. What is url_for()?</strong>
+        <p class="answer">Answer: It generates a URL from a registered Flask endpoint and its required parameters.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q19. Why validate dynamic URL parameters?</strong>
+        <p class="answer">Answer: To ensure values meet application requirements and to avoid unsafe assumptions about user input.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q20. Why is authorization important in an API?</strong>
+        <p class="answer">Answer: It ensures that users can access or modify only resources they are permitted to use.</p>
+    </div>
+
+    <h3>Part B: Multiple-Choice Questions</h3>
+
+    <div class="question">
+        <strong>Q1. Which decorator registers a Flask route?</strong>
+        <ol type="A">
+            <li><code>@app.url</code></li>
+            <li><code>@app.route</code></li>
+            <li><code>@flask.path</code></li>
+            <li><code>@route.app</code></li>
+        </ol>
+        <p class="answer">Answer: B — <code>@app.route</code>.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q2. Which method is normally used to retrieve data?</strong>
+        <ol type="A"><li>POST</li><li>DELETE</li><li>GET</li><li>PATCH</li></ol>
+        <p class="answer">Answer: C — GET.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q3. Which method is commonly used to submit new data?</strong>
+        <ol type="A"><li>POST</li><li>GET</li><li>HEAD</li><li>OPTIONS</li></ol>
+        <p class="answer">Answer: A — POST.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q4. Which converter accepts an integer?</strong>
+        <ol type="A"><li>string</li><li>int</li><li>path</li><li>uuid</li></ol>
+        <p class="answer">Answer: B — int.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q5. Which converter can accept slashes in a path segment?</strong>
+        <ol type="A"><li>int</li><li>float</li><li>path</li><li>uuid</li></ol>
+        <p class="answer">Answer: C — path.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q6. Which object is used to read query parameters?</strong>
+        <ol type="A"><li>request.form</li><li>request.args</li><li>request.files</li><li>app.route</li></ol>
+        <p class="answer">Answer: B — request.args.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q7. Which method is used to parse a JSON request body?</strong>
+        <ol type="A"><li>request.get_json()</li><li>request.get_html()</li><li>request.url_for()</li><li>app.json_body()</li></ol>
+        <p class="answer">Answer: A — request.get_json().</p>
+    </div>
+
+    <div class="question">
+        <strong>Q8. Which status code means Created?</strong>
+        <ol type="A"><li>200</li><li>201</li><li>301</li><li>404</li></ol>
+        <p class="answer">Answer: B — 201.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q9. Which status code means Method Not Allowed?</strong>
+        <ol type="A"><li>400</li><li>401</li><li>404</li><li>405</li></ol>
+        <p class="answer">Answer: D — 405.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q10. Which function generates a URL from an endpoint?</strong>
+        <ol type="A"><li>route_to()</li><li>make_url()</li><li>url_for()</li><li>redirect_url()</li></ol>
+        <p class="answer">Answer: C — url_for().</p>
+    </div>
+
+    <div class="question">
+        <strong>Q11. Which method is idempotent by definition?</strong>
+        <ol type="A"><li>POST, always</li><li>PUT</li><li>None of these</li><li>All POST requests</li></ol>
+        <p class="answer">Answer: B — PUT.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q12. Which response indicates a missing route or resource?</strong>
+        <ol type="A"><li>201</li><li>302</li><li>404</li><li>500</li></ol>
+        <p class="answer">Answer: C — 404.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q13. What does redirect() return?</strong>
+        <ol type="A"><li>A redirect response</li><li>A database connection</li><li>A Python module</li><li>A URL converter</li></ol>
+        <p class="answer">Answer: A — A redirect response.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q14. Which header describes the media type of a request body?</strong>
+        <ol type="A"><li>Host</li><li>Content-Type</li><li>Accept-Language</li><li>User-Agent</li></ol>
+        <p class="answer">Answer: B — Content-Type.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q15. Which status code means Forbidden?</strong>
+        <ol type="A"><li>401</li><li>403</li><li>404</li><li>409</li></ol>
+        <p class="answer">Answer: B — 403.</p>
+    </div>
+
+    <h3>Part C: Practical Exercises</h3>
+    <ol>
+        <li>Create a route named <code>/college</code> that returns your college name.</li>
+        <li>Create a route named <code>/student/&lt;int:id&gt;</code> that returns a student ID.</li>
+        <li>Create a route that accepts both GET and POST requests.</li>
+        <li>Read a <code>name</code> query parameter from <code>/greet?name=Alex</code>.</li>
+        <li>Create a POST endpoint that accepts a JSON object and validates a required field.</li>
+        <li>Return status code 201 after a successful creation operation.</li>
+        <li>Create a route that redirects to the home endpoint using <code>url_for()</code>.</li>
+        <li>Create a route that returns a 404 response when a record is missing.</li>
+        <li>Explain the difference between path parameters and query parameters.</li>
+        <li>Extend the student API to use a real database in a later module.</li>
+    </ol>
+</section>
+
+<section class="card">
+    <h2>17. Module 2 Completion Checklist</h2>
+    <p>Before moving to Module 3, make sure you can:</p>
+    <ul>
+        <li>Register routes and explain URL rules.</li>
+        <li>Write view functions that return valid responses.</li>
+        <li>Use dynamic URL parameters and built-in converters.</li>
+        <li>Explain the difference between GET, POST, PUT and DELETE.</li>
+        <li>Read query parameters, form data and JSON request bodies.</li>
+        <li>Return JSON responses with appropriate status codes.</li>
+        <li>Use redirects and generate URLs with <code>url_for()</code>.</li>
+        <li>Diagnose common 404, 405 and endpoint errors.</li>
+        <li>Validate user input and understand basic authorization requirements.</li>
+    </ul>
+
+    <div class="success">
+        <strong>Next module:</strong> Templates and Static Files — Jinja
+        variables, expressions, conditions, loops, template inheritance,
+        CSS, JavaScript, images and passing Python data into HTML.
+    </div>
+</section>
+
+</main>
+
+<footer class="footer">
+    <p><strong>Flask Learning Notes</strong></p>
+    <p>Module 2: Routing and HTTP Fundamentals</p>
+    <p class="small">Understand the request, match the route, process the data and return the right response.</p>
+</footer>
+
+</body>
+</html>
