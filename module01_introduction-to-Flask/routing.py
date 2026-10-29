@@ -1,3 +1,5 @@
+# use it in cmd --> python routing.py
+
 from flask import Flask
 
 app= Flask(__name__)
