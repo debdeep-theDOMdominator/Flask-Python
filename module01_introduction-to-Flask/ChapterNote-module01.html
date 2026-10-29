@@ -1,0 +1,1930 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flask Notes - Module 1: Introduction to Flask</title>
+
+<style>
+:root {
+    --primary: #075985;
+    --primary-dark: #0c4a6e;
+    --accent: #0d9488;
+    --background: #f4f7fb;
+    --surface: #ffffff;
+    --text: #263445;
+    --muted: #526174;
+    --border: #dce5ee;
+    --code-bg: #172435;
+    --note-bg: #e8f5ff;
+    --success-bg: #e8f7ef;
+    --warning-bg: #fff5df;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.page-header {
+    background: linear-gradient(135deg, #082f49, #075985);
+    color: #ffffff;
+    padding: 45px 20px;
+    text-align: center;
+}
+
+.page-header h1 {
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.25;
+    margin: 0 0 12px;
+}
+
+.page-header p {
+    max-width: 850px;
+    margin: 8px auto;
+    font-size: 17px;
+}
+
+.header-tag {
+    display: inline-block;
+    padding: 5px 14px;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 30px;
+    font-size: 13px;
+    letter-spacing: .5px;
+    margin-bottom: 12px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 28px auto;
+    padding: 0 22px;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 24px;
+    box-shadow: 0 3px 12px rgba(20, 45, 70, .035);
+}
+
+h2 {
+    color: var(--primary-dark);
+    font-size: 27px;
+    line-height: 1.4;
+    margin: 0 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    scroll-margin-top: 20px;
+}
+
+h3 {
+    color: var(--primary);
+    font-size: 21px;
+    margin-top: 27px;
+    margin-bottom: 10px;
+}
+
+h4 {
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 7px;
+}
+
+p {
+    margin: 10px 0 15px;
+}
+
+ul, ol {
+    padding-left: 27px;
+}
+
+li {
+    margin-bottom: 6px;
+}
+
+strong {
+    color: #153b56;
+}
+
+a {
+    color: var(--primary);
+}
+
+.toc {
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 20px 25px;
+}
+
+.toc ol {
+    columns: 2;
+    column-gap: 35px;
+}
+
+.toc li {
+    break-inside: avoid;
+}
+
+.toc a {
+    text-decoration: none;
+}
+
+.toc a:hover {
+    text-decoration: underline;
+}
+
+.note, .success, .warning {
+    padding: 15px 18px;
+    border-left: 4px solid;
+    border-radius: 5px;
+    margin: 18px 0;
+}
+
+.note {
+    background: var(--note-bg);
+    border-color: #0284c7;
+}
+
+.success {
+    background: var(--success-bg);
+    border-color: #16a34a;
+}
+
+.warning {
+    background: var(--warning-bg);
+    border-color: #d97706;
+}
+
+.code-title {
+    background: #26394f;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 7px 7px 0 0;
+    font-size: 14px;
+}
+
+pre {
+    background: var(--code-bg);
+    color: #e4edf7;
+    padding: 18px;
+    overflow-x: auto;
+    border-radius: 0 0 7px 7px;
+    margin: 0 0 18px;
+    font: 14px/1.75 Consolas, "Courier New", monospace;
+    white-space: pre;
+    tab-size: 4;
+}
+
+code {
+    font-family: Consolas, "Courier New", monospace;
+}
+
+p code, li code, td code {
+    background: #edf2f7;
+    color: #9b2450;
+    padding: 2px 5px;
+    border-radius: 4px;
+    overflow-wrap: anywhere;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 15px;
+}
+
+th, td {
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+    padding: 12px;
+}
+
+th {
+    background: #eaf2f9;
+    color: #123c58;
+}
+
+tr:nth-child(even) td {
+    background: #fafcff;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin: 18px 0;
+}
+
+.mini-card {
+    background: #f8fbff;
+    border: 1px solid var(--border);
+    padding: 17px;
+    border-radius: 9px;
+}
+
+.mini-card h3 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 3px 9px;
+    background: #dff5f1;
+    color: #075e55;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.question {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.question:last-child {
+    border-bottom: 0;
+}
+
+.answer {
+    color: #17603b;
+    margin-top: 5px;
+}
+
+.footer {
+    background: #102b42;
+    color: #ffffff;
+    text-align: center;
+    padding: 25px;
+    margin-top: 35px;
+}
+
+.small {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.checklist li {
+    list-style: "☐  ";
+    padding-left: 5px;
+}
+
+@media (max-width: 700px) {
+    .container {
+        padding: 0 12px;
+        margin-top: 16px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+    h2 {
+        font-size: 23px;
+    }
+
+    h3 {
+        font-size: 19px;
+    }
+
+    .toc ol {
+        columns: 1;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 13px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+
+    body {
+        background: #ffffff;
+        color: #111827;
+        font-size: 11pt;
+        line-height: 1.65;
+    }
+
+    .page-header {
+        background: #ffffff !important;
+        color: #123c58 !important;
+        border-bottom: 2px solid #123c58;
+        padding: 15px 0;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0;
+        margin: 15px 0;
+    }
+
+    .card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        margin-bottom: 22px;
+    }
+
+    h2, h3, h4 {
+        break-after: avoid;
+    }
+
+    p, li, tr {
+        orphans: 3;
+        widows: 3;
+    }
+
+    pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        color: #111827;
+        background: #f2f5f8 !important;
+        border: 1px solid #cbd5e1;
+        print-color-adjust: exact;
+    }
+
+    .code-title {
+        background: #e2e8f0 !important;
+        color: #111827 !important;
+        print-color-adjust: exact;
+    }
+
+    .note, .success, .warning, th {
+        print-color-adjust: exact;
+    }
+
+    .toc a {
+        color: #111827;
+    }
+
+    .footer {
+        background: #ffffff;
+        color: #111827;
+        border-top: 1px solid #888;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .card, .mini-card, .note, .success, .warning {
+        break-inside: avoid;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="page-header">
+    <span class="header-tag">PYTHON WEB DEVELOPMENT</span>
+    <h1>Module 1: Introduction to Flask</h1>
+    <p>A beginner-friendly guide to Flask, web applications, installation, environments, routing and the development server.</p>
+    <p>Learning level: Beginner to practical application development</p>
+</header>
+
+<main class="container">
+
+<!-- TABLE OF CONTENTS -->
+
+<section class="card" id="contents">
+    <h2>Module Contents</h2>
+    <nav class="toc">
+        <ol>
+            <li><a href="#flask-intro">Flask Introduction</a></li>
+            <li><a href="#what-is-flask">What is Flask?</a></li>
+            <li><a href="#course-overview">Course Overview</a></li>
+            <li><a href="#what-flask-does">What Does Flask Do?</a></li>
+            <li><a href="#what-build">What Can We Build?</a></li>
+            <li><a href="#why-flask">Why Flask?</a></li>
+            <li><a href="#features">Features and Advantages</a></li>
+            <li><a href="#limitations">Limitations and Disadvantages</a></li>
+            <li><a href="#comparison">Flask vs Django vs FastAPI</a></li>
+            <li><a href="#roadmap">Course Roadmap</a></li>
+            <li><a href="#installation">Installing Python and Flask</a></li>
+            <li><a href="#virtual-env">Virtual Environments</a></li>
+            <li><a href="#first-app">First Flask Application</a></li>
+            <li><a href="#routing">Introduction to Routing</a></li>
+            <li><a href="#server">Flask Development Server</a></li>
+            <li><a href="#workflow">Application Workflow</a></li>
+            <li><a href="#common-errors">Common Errors</a></li>
+            <li><a href="#revision">Revision Notes</a></li>
+            <li><a href="#practice">Practice Questions</a></li>
+        </ol>
+    </nav>
+</section>
+
+<!-- 1 -->
+
+<section class="card" id="flask-intro">
+    <h2>1. Flask Introduction</h2>
+
+    <h3>1.1 What is Web Development?</h3>
+    <p>
+        Web development is the process of creating websites and web applications
+        that users access through a web browser. It involves designing user
+        interfaces, processing requests, managing data and returning responses.
+    </p>
+
+    <div class="grid">
+        <div class="mini-card">
+            <h3>Frontend</h3>
+            <p>The part of an application that users see and interact with.</p>
+            <p><strong>Common technologies:</strong> HTML, CSS, JavaScript and React.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Backend</h3>
+            <p>The server-side part that processes requests, applies business logic, authenticates users and communicates with databases.</p>
+            <p><strong>Common technologies:</strong> Flask, Django, FastAPI, Express.js.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Database</h3>
+            <p>Stores and retrieves application data, such as user accounts, products, orders and records.</p>
+            <p><strong>Examples:</strong> PostgreSQL, MySQL, SQLite and MongoDB.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Web server</h3>
+            <p>Accepts HTTP requests and helps deliver responses. In production, it commonly works with a WSGI or ASGI application server.</p>
+        </div>
+    </div>
+
+    <h3>1.2 Where Does Flask Fit In?</h3>
+    <p>
+        Flask is a Python framework used mainly to develop the backend of web
+        applications. It receives HTTP requests, runs Python code and returns
+        responses such as HTML pages, JSON data or error messages.
+    </p>
+
+    <div class="note">
+        <strong>Remember:</strong> Flask is a backend framework. It can render
+        HTML pages, but it is not a replacement for HTML, CSS or JavaScript.
+        It can also provide APIs to frontend applications such as React.
+    </div>
+</section>
+
+<!-- 2 -->
+
+<section class="card" id="what-is-flask">
+    <h2>2. What Is Flask?</h2>
+
+    <h3>2.1 Definition</h3>
+    <p>
+        <strong>Flask is a lightweight, open-source web framework written in
+        Python.</strong> It provides the essential tools needed to create web
+        applications, including URL routing, request handling, response
+        generation and integration with other Python libraries.
+    </p>
+
+    <p>
+        Flask is commonly described as a <strong>microframework</strong>.
+        The word "micro" does not mean that Flask can only build small
+        applications. It means that Flask keeps its core relatively small
+        and does not force developers to use a large set of built-in
+        components for every project.
+    </p>
+
+    <h3>2.2 Important Terms</h3>
+    <table>
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr>
+            <td>Framework</td>
+            <td>A collection of tools, conventions and reusable components that helps developers build applications.</td>
+        </tr>
+        <tr>
+            <td>Lightweight</td>
+            <td>Provides a relatively small core without requiring many built-in components.</td>
+        </tr>
+        <tr>
+            <td>Open-source</td>
+            <td>The source code is available under an open-source licence, allowing permitted use, inspection and contribution.</td>
+        </tr>
+        <tr>
+            <td>Microframework</td>
+            <td>A framework with a minimal core that can be extended using additional libraries.</td>
+        </tr>
+        <tr>
+            <td>Backend</td>
+            <td>The server-side application logic that processes requests and manages data.</td>
+        </tr>
+        <tr>
+            <td>Route</td>
+            <td>A URL rule that determines which application function handles a request.</td>
+        </tr>
+        <tr>
+            <td>View function</td>
+            <td>A Python function that handles a request and returns a response.</td>
+        </tr>
+    </table>
+
+    <h3>2.3 How Does Flask Work?</h3>
+    <ol>
+        <li>A user opens a URL in a browser or sends a request from a frontend application.</li>
+        <li>The request reaches the Flask application through a web server.</li>
+        <li>Flask matches the URL and HTTP method to a registered route.</li>
+        <li>The corresponding Python view function executes.</li>
+        <li>The function may validate input, perform calculations or access a database.</li>
+        <li>Flask sends the response back to the client.</li>
+        <li>The browser displays the returned page or the frontend processes the returned data.</li>
+    </ol>
+
+    <div class="note">
+        <strong>Example:</strong> When a user opens <code>/about</code>,
+        Flask can execute an <code>about()</code> function and return
+        an HTML response containing information about the website.
+    </div>
+
+    <h3>2.4 What Does Flask Include?</h3>
+    <ul>
+        <li>URL routing and view functions.</li>
+        <li>HTTP request and response handling.</li>
+        <li>Jinja template integration.</li>
+        <li>Static-file support.</li>
+        <li>Cookie and session support.</li>
+        <li>Error handling and application configuration.</li>
+        <li>Integration with extensions for databases, forms, authentication and other features.</li>
+    </ul>
+
+    <p>
+        Flask uses the Werkzeug WSGI utility library and integrates the
+        Jinja template engine. These libraries help Flask handle web requests
+        and generate dynamic HTML.
+    </p>
+</section>
+
+<!-- 3 -->
+
+<section class="card" id="course-overview">
+    <h2>3. Course Overview</h2>
+
+    <p>
+        This course progresses from the basic concepts of Flask to building
+        practical backend applications. The goal is not merely to memorise
+        syntax, but to understand how a browser, Python backend and database
+        work together.
+    </p>
+
+    <table>
+        <tr><th>Learning stage</th><th>What you will learn</th><th>Expected outcome</th></tr>
+        <tr>
+            <td>Foundation</td>
+            <td>Flask basics, Python environment, routing and development server</td>
+            <td>Run a working Flask application.</td>
+        </tr>
+        <tr>
+            <td>Web pages</td>
+            <td>Templates, Jinja, HTML, CSS and forms</td>
+            <td>Create dynamic websites.</td>
+        </tr>
+        <tr>
+            <td>Data handling</td>
+            <td>Requests, validation, databases and CRUD</td>
+            <td>Build data-driven applications.</td>
+        </tr>
+        <tr>
+            <td>Security</td>
+            <td>Authentication, password hashing, sessions and permissions</td>
+            <td>Protect application features and user data.</td>
+        </tr>
+        <tr>
+            <td>API development</td>
+            <td>REST principles, JSON and HTTP status codes</td>
+            <td>Build APIs for React or other clients.</td>
+        </tr>
+        <tr>
+            <td>Deployment</td>
+            <td>Configuration, production server, testing and hosting</td>
+            <td>Deploy an application for real users.</td>
+        </tr>
+    </table>
+</section>
+
+<!-- 4 -->
+
+<section class="card" id="what-flask-does">
+    <h2>4. What Does Flask Do?</h2>
+
+    <h3>4.1 Handles HTTP Requests</h3>
+    <p>
+        Flask receives requests for URLs and routes them to the appropriate
+        Python function. For example, a request to <code>/products</code>
+        can trigger a function that retrieves product information.
+    </p>
+
+    <h3>4.2 Generates Responses</h3>
+    <p>A Flask application can return different types of responses:</p>
+    <ul>
+        <li>HTML for web pages.</li>
+        <li>JSON for APIs.</li>
+        <li>Plain text for simple responses.</li>
+        <li>Redirects to other URLs.</li>
+        <li>Files or downloads.</li>
+        <li>Appropriate HTTP errors and status codes.</li>
+    </ul>
+
+    <h3>4.3 Processes Business Logic</h3>
+    <p>
+        Business logic consists of rules that determine how an application
+        operates. For example, an online store may calculate a total price,
+        validate an order, check stock or determine whether a user is
+        permitted to access an administrative page.
+    </p>
+
+    <h3>4.4 Connects to Databases</h3>
+    <p>
+        Flask does not require a particular database. Developers can use
+        Python database drivers or libraries such as SQLAlchemy to work with
+        relational databases. MongoDB can be integrated using an appropriate
+        MongoDB driver or library.
+    </p>
+
+    <h3>4.5 Supports API Development</h3>
+    <p>
+        An API allows different software applications to communicate.
+        Flask can return JSON data to a React frontend, a mobile application
+        or another service.
+    </p>
+
+    <div class="code-title">Example: A simple JSON API</div>
+    <pre><code>from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route("/api/message")
+def message():
+    return jsonify({
+        "message": "Hello from Flask",
+        "status": "success"
+    })
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <p>
+        When a client requests <code>/api/message</code>, Flask returns
+        JSON rather than a complete HTML page.
+    </p>
+</section>
+
+<!-- 5 -->
+
+<section class="card" id="what-build">
+    <h2>5. What Can We Build with Flask?</h2>
+
+    <div class="grid">
+        <div class="mini-card">
+            <h3>Websites and Portals</h3>
+            <p>Educational portals, company websites, knowledge repositories and content-management systems.</p>
+        </div>
+        <div class="mini-card">
+            <h3>REST APIs</h3>
+            <p>Backend APIs for React applications, mobile apps and third-party integrations.</p>
+        </div>
+        <div class="mini-card">
+            <h3>E-commerce Backends</h3>
+            <p>Product catalogues, carts, order processing, authentication and payment integration.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Dashboards</h3>
+            <p>Admin panels, reports, analytics dashboards and management systems.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Machine Learning Applications</h3>
+            <p>Web interfaces that accept input, run a Python model and return predictions.</p>
+        </div>
+        <div class="mini-card">
+            <h3>Automation Tools</h3>
+            <p>Internal tools that execute Python workflows and display their results through a web interface.</p>
+        </div>
+    </div>
+
+    <h3>Example: Student Management System</h3>
+    <p>A Flask-based student management system might contain:</p>
+    <ul>
+        <li>Student registration and login.</li>
+        <li>Student profile management.</li>
+        <li>Attendance records.</li>
+        <li>Marks and result management.</li>
+        <li>Admin-only student management.</li>
+        <li>Database storage and reporting.</li>
+    </ul>
+
+    <div class="success">
+        <strong>Important:</strong> Flask is capable of supporting large
+        applications when they are designed, tested, secured and deployed
+        properly. The suitability of Flask depends on the project's
+        requirements and architecture, not only on its size.
+    </div>
+</section>
+
+<!-- 6 -->
+
+<section class="card" id="why-flask">
+    <h2>6. Why Flask?</h2>
+
+    <h3>6.1 Reasons to Learn Flask</h3>
+    <ol>
+        <li><strong>Python-based:</strong> It is suitable for learners who already know Python.</li>
+        <li><strong>Easy entry point:</strong> A small application can be created with only a few lines of code.</li>
+        <li><strong>Flexible architecture:</strong> Developers can choose libraries and organize their applications according to their needs.</li>
+        <li><strong>API-friendly:</strong> It is useful for building backend services for React and mobile applications.</li>
+        <li><strong>Python ecosystem:</strong> It can integrate with data analysis, machine learning and automation libraries.</li>
+        <li><strong>Incremental learning:</strong> Developers can add database access, authentication and other capabilities as the application grows.</li>
+        <li><strong>Testing support:</strong> Flask provides a test client that helps test requests and responses without running a live server.</li>
+    </ol>
+
+    <h3>6.2 When Is Flask a Good Choice?</h3>
+    <ul>
+        <li>When you want to understand web backend fundamentals.</li>
+        <li>When building a small or medium-sized API or web application.</li>
+        <li>When you want control over libraries and project structure.</li>
+        <li>When integrating Python logic into a web application.</li>
+        <li>When creating a backend for a separate frontend such as React.</li>
+    </ul>
+
+    <h3>6.3 When Might Another Framework Be Better?</h3>
+    <p>
+        Django may be more convenient when you need a built-in admin interface,
+        ORM, authentication system and a highly integrated framework.
+        FastAPI may be more suitable when the primary goal is to build
+        typed APIs with automatic OpenAPI documentation and asynchronous
+        request handling.
+    </p>
+
+    <p>
+        These are general guidelines, not strict rules. All three frameworks
+        can support different kinds of applications.
+    </p>
+</section>
+
+<!-- 7 -->
+
+<section class="card" id="features">
+    <h2>7. Features and Advantages of Flask</h2>
+
+    <h3>7.1 Major Features</h3>
+
+    <h4>1. Minimal Core</h4>
+    <p>
+        Flask provides essential web-development functionality while allowing
+        developers to choose many additional tools independently.
+    </p>
+
+    <h4>2. URL Routing</h4>
+    <p>
+        Routes map URLs and HTTP methods to Python functions. This makes
+        it possible to define separate behaviour for pages such as
+        <code>/</code>, <code>/about</code> and <code>/products</code>.
+    </p>
+
+    <h4>3. Jinja Templates</h4>
+    <p>
+        Flask integrates Jinja, a template engine that supports variables,
+        conditions, loops and template inheritance for generating dynamic HTML.
+    </p>
+
+    <h4>4. Request and Response Objects</h4>
+    <p>
+        Flask exposes information about the incoming request and provides
+        tools for generating the outgoing response.
+    </p>
+
+    <h4>5. Sessions and Cookies</h4>
+    <p>
+        Flask supports cookies and signed-cookie-based sessions. Sensitive
+        data should not be placed in a default Flask session merely because
+        the session is signed; signing protects integrity, not confidentiality.
+    </p>
+
+    <h4>6. Extensions</h4>
+    <p>
+        Extensions add capabilities such as database integration, login
+        management, form validation, migrations and caching.
+    </p>
+
+    <h4>7. Debugging and Testing</h4>
+    <p>
+        Development tools help diagnose errors, while Flask's test client
+        allows developers to test application routes.
+    </p>
+
+    <h3>7.2 Advantages</h3>
+    <table>
+        <tr><th>Advantage</th><th>Explanation</th></tr>
+        <tr>
+            <td>Simple to start</td>
+            <td>A basic application requires very little setup.</td>
+        </tr>
+        <tr>
+            <td>Flexible</td>
+            <td>Developers can select their preferred database, authentication and other libraries.</td>
+        </tr>
+        <tr>
+            <td>Python integration</td>
+            <td>Useful for applications that rely on Python packages or data-processing workflows.</td>
+        </tr>
+        <tr>
+            <td>Lightweight core</td>
+            <td>Does not require every project to use a large collection of built-in components.</td>
+        </tr>
+        <tr>
+            <td>Good for APIs</td>
+            <td>Routes can return JSON and support clients written in different technologies.</td>
+        </tr>
+        <tr>
+            <td>Extensible</td>
+            <td>Additional capabilities can be introduced as project requirements evolve.</td>
+        </tr>
+    </table>
+</section>
+
+<!-- 8 -->
+
+<section class="card" id="limitations">
+    <h2>8. Limitations and Disadvantages of Flask</h2>
+
+    <h3>8.1 Major Limitations</h3>
+    <ul>
+        <li><strong>Fewer built-in features:</strong> Database integration, authentication and other capabilities generally require extensions or additional libraries.</li>
+        <li><strong>Architectural responsibility:</strong> Developers must choose a sensible project structure as the application grows.</li>
+        <li><strong>Library selection:</strong> Choosing and maintaining compatible extensions requires care.</li>
+        <li><strong>Security responsibility:</strong> Authentication, authorization, validation, CSRF protection and other security controls must be implemented correctly.</li>
+        <li><strong>Production setup:</strong> The built-in development server is not designed to be the production deployment server.</li>
+        <li><strong>Async considerations:</strong> Flask supports asynchronous views, but it is based on WSGI. Async support does not automatically make it equivalent to an ASGI-native framework for long-lived concurrent connections.</li>
+    </ul>
+
+    <h3>8.2 Are These Limitations Serious?</h3>
+    <p>
+        Not necessarily. Flask's flexibility is useful when a project needs
+        only selected capabilities. However, a team must plan the architecture,
+        dependencies, security and deployment instead of assuming that every
+        feature is automatically included.
+    </p>
+
+    <div class="warning">
+        <strong>Security warning:</strong> Never deploy a public production
+        application with Flask's development debugger enabled. The interactive
+        debugger can expose extremely sensitive capabilities.
+    </div>
+</section>
+
+<!-- 9 -->
+
+<section class="card" id="comparison">
+    <h2>9. Flask vs Django vs FastAPI</h2>
+
+    <h3>9.1 Introduction to Each Framework</h3>
+
+    <p><strong>Flask:</strong> A lightweight WSGI web framework with a minimal core and an extension-based ecosystem.</p>
+
+    <p><strong>Django:</strong> A high-level Python web framework that includes many integrated features such as an ORM, authentication, an admin interface and a form system.</p>
+
+    <p><strong>FastAPI:</strong> A Python framework focused on APIs, type annotations, request validation and automatic OpenAPI documentation. It is ASGI-based.</p>
+
+    <h3>9.2 Comparison Table</h3>
+
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Flask</th>
+            <th>Django</th>
+            <th>FastAPI</th>
+        </tr>
+        <tr>
+            <td>Main focus</td>
+            <td>Flexible web applications and APIs</td>
+            <td>Full-featured web applications</td>
+            <td>APIs and typed request handling</td>
+        </tr>
+        <tr>
+            <td>Core approach</td>
+            <td>Minimal core</td>
+            <td>Integrated, batteries-included</td>
+            <td>API-focused framework</td>
+        </tr>
+        <tr>
+            <td>Learning curve</td>
+            <td>Generally gentle at the beginning</td>
+            <td>More concepts and conventions initially</td>
+            <td>Accessible with Python and type-hint knowledge</td>
+        </tr>
+        <tr>
+            <td>Built-in ORM</td>
+            <td>No</td>
+            <td>Yes</td>
+            <td>No built-in ORM</td>
+        </tr>
+        <tr>
+            <td>Built-in admin interface</td>
+            <td>No</td>
+            <td>Yes</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>Automatic API docs</td>
+            <td>Not built into the core</td>
+            <td>Not a core automatic OpenAPI feature</td>
+            <td>Yes, through OpenAPI integrations</td>
+        </tr>
+        <tr>
+            <td>Application interface</td>
+            <td>WSGI</td>
+            <td>Primarily WSGI, with ASGI support</td>
+            <td>ASGI</td>
+        </tr>
+        <tr>
+            <td>Typical use</td>
+            <td>Custom web backends and APIs</td>
+            <td>Database-driven portals and full web applications</td>
+            <td>APIs, validation-heavy services and async workloads</td>
+        </tr>
+    </table>
+
+    <h3>9.3 What Is WSGI?</h3>
+    <p>
+        <strong>WSGI</strong> stands for Web Server Gateway Interface.
+        It is a standard interface between Python web applications and
+        compatible web servers or application servers.
+    </p>
+
+    <p>
+        Flask is a WSGI application. In production, a WSGI server such as
+        Gunicorn can run the application. On Windows, other deployment
+        arrangements may be more appropriate depending on the hosting platform.
+    </p>
+
+    <h3>9.4 What Is ASGI?</h3>
+    <p>
+        <strong>ASGI</strong> stands for Asynchronous Server Gateway Interface.
+        It supports asynchronous request handling and protocols such as
+        WebSockets. FastAPI is designed for the ASGI ecosystem.
+    </p>
+
+    <h3>9.5 Which One Should You Choose?</h3>
+
+    <table>
+        <tr><th>Requirement</th><th>Possible choice</th></tr>
+        <tr>
+            <td>Learn Python web development fundamentals</td>
+            <td>Flask</td>
+        </tr>
+        <tr>
+            <td>Build a full database-driven portal with a built-in admin panel</td>
+            <td>Django</td>
+        </tr>
+        <tr>
+            <td>Build an API with typed validation and automatic API documentation</td>
+            <td>FastAPI</td>
+        </tr>
+        <tr>
+            <td>Build a custom Python backend for React</td>
+            <td>Flask or FastAPI; requirements determine the better fit.</td>
+        </tr>
+        <tr>
+            <td>Build an application using Python data science libraries</td>
+            <td>Flask or FastAPI, depending on the interface and workload.</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        There is no universal winner. Consider the project's features,
+        team experience, integration requirements, security needs and
+        deployment environment before choosing a framework.
+    </div>
+</section>
+
+<!-- 10 -->
+
+<section class="card" id="roadmap">
+    <h2>10. Complete Flask Course Roadmap</h2>
+
+    <table>
+        <tr><th>Module</th><th>Topics</th></tr>
+        <tr>
+            <td>1. Introduction</td>
+            <td>Flask basics, framework comparisons, installation, virtual environments, first app and development server.</td>
+        </tr>
+        <tr>
+            <td>2. Routing and HTTP</td>
+            <td>Routes, view functions, URL converters, HTTP methods, request-response cycle and redirects.</td>
+        </tr>
+        <tr>
+            <td>3. Templates</td>
+            <td>Jinja, variables, conditions, loops, inheritance and static files.</td>
+        </tr>
+        <tr>
+            <td>4. Forms</td>
+            <td>Request data, query parameters, validation, file uploads and CSRF protection.</td>
+        </tr>
+        <tr>
+            <td>5. Databases</td>
+            <td>SQL, SQLite, SQLAlchemy, models, CRUD, relationships and migrations.</td>
+        </tr>
+        <tr>
+            <td>6. Authentication</td>
+            <td>Registration, login, hashing, sessions, authorization and role-based access.</td>
+        </tr>
+        <tr>
+            <td>7. APIs</td>
+            <td>JSON, REST, status codes, API testing, Blueprints and CORS.</td>
+        </tr>
+        <tr>
+            <td>8. Advanced topics</td>
+            <td>Contexts, configuration, logging, error handling, testing and security.</td>
+        </tr>
+        <tr>
+            <td>9. Deployment</td>
+            <td>Production configuration, WSGI servers, environment variables, hosting and final projects.</td>
+        </tr>
+    </table>
+
+    <p>
+        Complete the modules in sequence. Later modules depend on your
+        understanding of routes, functions, HTTP methods, data handling
+        and application structure.
+    </p>
+</section>
+
+<!-- 11 -->
+
+<section class="card" id="installation">
+    <h2>11. Installing Python and Flask</h2>
+
+    <h3>11.1 Prerequisites</h3>
+    <p>Before installing Flask, ensure that you have:</p>
+    <ul>
+        <li>Python 3 installed.</li>
+        <li>A terminal such as Command Prompt or PowerShell.</li>
+        <li>A code editor such as Visual Studio Code.</li>
+        <li>Basic knowledge of Python functions, variables, imports and conditionals.</li>
+    </ul>
+
+    <h3>11.2 Check Python Installation</h3>
+    <p>On Windows, open Command Prompt or PowerShell and run:</p>
+
+    <div class="code-title">Windows terminal</div>
+    <pre><code>py --version</code></pre>
+
+    <p>You can also try:</p>
+    <pre><code>python --version</code></pre>
+
+    <p>
+        A successful command prints the installed Python version.
+        If neither command works, install Python from the official
+        Python website and ensure that the installation is available
+        from your terminal.
+    </p>
+
+    <p>
+        Official website:
+        <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">Python Downloads</a>
+    </p>
+
+    <h3>11.3 Create a Project Folder</h3>
+    <pre><code>mkdir flask_learning
+cd flask_learning</code></pre>
+
+    <p>
+        The first command creates a folder named <code>flask_learning</code>.
+        The second command moves the terminal into that folder.
+    </p>
+
+    <h3>11.4 Create a Virtual Environment</h3>
+    <pre><code>py -m venv .venv</code></pre>
+
+    <p>
+        This creates an isolated Python environment inside the
+        <code>.venv</code> directory. The next section explains why
+        this is important.
+    </p>
+
+    <h3>11.5 Activate the Environment on Windows</h3>
+    <p>For Command Prompt:</p>
+    <pre><code>.venv\Scripts\activate.bat</code></pre>
+
+    <p>For PowerShell:</p>
+    <pre><code>.\.venv\Scripts\Activate.ps1</code></pre>
+
+    <p>
+        If PowerShell blocks activation, you can use Command Prompt instead.
+        Avoid changing system-wide execution policies unnecessarily.
+    </p>
+
+    <h3>11.6 Install Flask</h3>
+    <p>With the virtual environment activated, run:</p>
+    <pre><code>python -m pip install --upgrade pip
+python -m pip install Flask</code></pre>
+
+    <p>
+        Python package names are generally case-insensitive for installation,
+        but <code>Flask</code> is the conventional package name.
+    </p>
+
+    <h3>11.7 Verify the Installation</h3>
+    <pre><code>python -m flask --version</code></pre>
+
+    <p>
+        This prints the Flask version and related environment information.
+        You can also test the import:
+    </p>
+
+    <pre><code>python -c "import flask; print(flask.__version__)"</code></pre>
+
+    <div class="warning">
+        The <code>flask.__version__</code> attribute is deprecated in
+        recent Flask versions and may be removed in a future release.
+        Prefer <code>python -m flask --version</code> or Python's
+        package metadata API for version checks.
+    </div>
+</section>
+
+<!-- 12 -->
+
+<section class="card" id="virtual-env">
+    <h2>12. Virtual Environments in Python</h2>
+
+    <h3>12.1 What Is a Virtual Environment?</h3>
+    <p>
+        A <strong>virtual environment</strong> is an isolated Python
+        environment for a project. It allows the project to have its
+        own installed packages without relying on the same set of
+        third-party packages used by every other project.
+    </p>
+
+    <h3>12.2 Why Is It Necessary?</h3>
+    <p>Imagine that you have two Python projects:</p>
+
+    <ul>
+        <li>Project A requires one version of a library.</li>
+        <li>Project B requires a different compatible version.</li>
+    </ul>
+
+    <p>
+        Installing every package globally can cause dependency conflicts.
+        Separate virtual environments help each project maintain its
+        own dependencies.
+    </p>
+
+    <h3>12.3 Advantages</h3>
+    <ul>
+        <li>Reduces dependency conflicts between projects.</li>
+        <li>Keeps project dependencies separate from system packages.</li>
+        <li>Makes development and testing environments easier to reproduce.</li>
+        <li>Helps document project dependencies in a requirements file.</li>
+        <li>Makes project setup easier for teammates and deployment environments.</li>
+    </ul>
+
+    <h3>12.4 Common Virtual Environment Commands</h3>
+
+    <table>
+        <tr><th>Task</th><th>Command</th></tr>
+        <tr><td>Create environment</td><td><code>py -m venv .venv</code></td></tr>
+        <tr><td>Activate in Command Prompt</td><td><code>.venv\Scripts\activate.bat</code></td></tr>
+        <tr><td>Activate in PowerShell</td><td><code>.\.venv\Scripts\Activate.ps1</code></td></tr>
+        <tr><td>Install Flask</td><td><code>python -m pip install Flask</code></td></tr>
+        <tr><td>List installed packages</td><td><code>python -m pip list</code></td></tr>
+        <tr><td>Save dependencies</td><td><code>python -m pip freeze &gt; requirements.txt</code></td></tr>
+        <tr><td>Install saved dependencies</td><td><code>python -m pip install -r requirements.txt</code></td></tr>
+        <tr><td>Deactivate environment</td><td><code>deactivate</code></td></tr>
+    </table>
+
+    <h3>12.5 Understanding requirements.txt</h3>
+    <p>
+        The <code>requirements.txt</code> file records Python package
+        dependencies. Running <code>pip freeze</code> records the
+        installed package versions, which helps recreate the environment.
+    </p>
+
+    <p>Example of a requirements file:</p>
+    <div class="code-title">requirements.txt</div>
+    <pre><code>Flask==3.1.2</code></pre>
+
+    <p class="small">
+        This is an illustrative version pin, not a requirement to install
+        that exact release. Record the version actually installed and
+        compatible with your project.
+    </p>
+
+    <h3>12.6 Recommended Project Structure</h3>
+    <pre><code>flask_learning/
+|
+|-- .venv/
+|-- app.py
+|-- requirements.txt
+|-- templates/
+|   |-- index.html
+|   |-- about.html
+|
+|-- static/
+    |-- css/
+    |-- js/
+    |-- images/</code></pre>
+
+    <p>
+        The <code>.venv</code> folder contains the virtual environment.
+        <code>app.py</code> contains the Flask application,
+        <code>templates</code> stores HTML templates and
+        <code>static</code> stores CSS, JavaScript and images.
+    </p>
+
+    <div class="note">
+        Do not normally commit your entire <code>.venv</code> directory
+        to Git. Share the dependency specification instead and recreate
+        the environment on another computer.
+    </div>
+</section>
+
+<!-- 13 -->
+
+<section class="card" id="first-app">
+    <h2>13. Creating Your First Flask Application</h2>
+
+    <h3>13.1 Create app.py</h3>
+    <p>
+        Inside the project folder, create a file named
+        <code>app.py</code>. Write the following code:
+    </p>
+
+    <div class="code-title">app.py</div>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello, Flask! My first web application is running."
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <h3>13.2 Line-by-Line Explanation</h3>
+
+    <h4>Line 1: Import Flask</h4>
+    <pre><code>from flask import Flask</code></pre>
+    <p>
+        This imports the <code>Flask</code> class from the Flask package.
+        The class is used to create a Flask application object.
+    </p>
+
+    <h4>Line 2: Create the Application</h4>
+    <pre><code>app = Flask(__name__)</code></pre>
+    <p>
+        This creates the Flask application instance and stores it in
+        the variable <code>app</code>.
+    </p>
+    <p>
+        <code>__name__</code> is a Python variable that identifies the
+        current module. Flask uses it to help determine the application's
+        resource locations, including templates and static files.
+    </p>
+
+    <h4>Line 3: Register a Route</h4>
+    <pre><code>@app.route("/")</code></pre>
+    <p>
+        This decorator registers the URL path <code>/</code> with the
+        function immediately below it. The path <code>/</code> is the
+        root URL of the application.
+    </p>
+
+    <h4>Lines 4–5: Define the View Function</h4>
+    <pre><code>def home():
+    return "Hello, Flask! My first web application is running."</code></pre>
+    <p>
+        When a request matches the route, Flask calls
+        <code>home()</code>. The returned string becomes the body
+        of the HTTP response.
+    </p>
+
+    <h4>Lines 6–7: Run the Application</h4>
+    <pre><code>if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+    <p>
+        This condition checks whether the Python file is being run
+        directly rather than imported as a module. If it is being
+        run directly, the development server starts.
+    </p>
+
+    <p>
+        The <code>debug=True</code> option enables the development
+        debugger and automatic reloading when supported. It is useful
+        during local development but must not be enabled in production.
+    </p>
+
+    <h3>13.3 Run the Application</h3>
+    <p>Activate your virtual environment and run:</p>
+    <pre><code>python app.py</code></pre>
+
+    <p>
+        Flask starts a local development server. The terminal will display
+        a local URL, commonly:
+    </p>
+
+    <pre><code>http://127.0.0.1:5000</code></pre>
+
+    <p>
+        Open that address in your browser. You should see:
+    </p>
+
+    <div class="success">
+        Hello, Flask! My first web application is running.
+    </div>
+
+    <h3>13.4 Run Using the Flask CLI</h3>
+    <p>You can also start the application with Flask's command-line interface:</p>
+
+    <pre><code>flask --app app run --debug</code></pre>
+
+    <p>
+        Here, <code>--app app</code> tells Flask to locate the application
+        in <code>app.py</code>. The <code>--debug</code> flag enables
+        development debugging.
+    </p>
+
+    <div class="note">
+        Choose either <code>python app.py</code> or the Flask CLI command.
+        You generally should not start two servers on the same port at
+        the same time.
+    </div>
+</section>
+
+<!-- 14 -->
+
+<section class="card" id="routing">
+    <h2>14. Introduction to Routing</h2>
+
+    <h3>14.1 What Is Routing?</h3>
+    <p>
+        Routing is the process of matching an incoming URL and HTTP method
+        to the Python function that should handle the request.
+    </p>
+
+    <h3>14.2 Multiple Routes</h3>
+
+    <div class="code-title">app.py</div>
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Welcome to the home page."
+
+@app.route("/about")
+def about():
+    return "This is the about page."
+
+@app.route("/contact")
+def contact():
+    return "Contact us here."
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <table>
+        <tr><th>URL</th><th>Function</th><th>Response</th></tr>
+        <tr><td><code>/</code></td><td><code>home()</code></td><td>Home page message</td></tr>
+        <tr><td><code>/about</code></td><td><code>about()</code></td><td>About page message</td></tr>
+        <tr><td><code>/contact</code></td><td><code>contact()</code></td><td>Contact page message</td></tr>
+    </table>
+
+    <h3>14.3 Dynamic Routes</h3>
+    <p>
+        A dynamic route accepts a value as part of the URL. For example,
+        a student profile might be identified by a student ID.
+    </p>
+
+    <pre><code>@app.route("/student/&lt;int:student_id&gt;")
+def student(student_id):
+    return f"Student ID: {student_id}"</code></pre>
+
+    <p>
+        Visiting <code>/student/25</code> passes the integer
+        <code>25</code> to the view function.
+    </p>
+
+    <p>
+        The <code>int:</code> converter restricts this URL segment to
+        an integer. Flask also supports other converters, including
+        <code>string</code>, <code>float</code>, <code>path</code>
+        and <code>uuid</code>.
+    </p>
+
+    <h3>14.4 HTTP Methods</h3>
+    <p>
+        HTTP methods indicate the intended action of a request.
+        Flask routes can be configured to accept one or more methods.
+    </p>
+
+    <table>
+        <tr><th>Method</th><th>Common purpose</th></tr>
+        <tr><td>GET</td><td>Retrieve or display information.</td></tr>
+        <tr><td>POST</td><td>Submit data or create a resource.</td></tr>
+        <tr><td>PUT</td><td>Replace a resource or update it according to the API's design.</td></tr>
+        <tr><td>PATCH</td><td>Partially update a resource.</td></tr>
+        <tr><td>DELETE</td><td>Delete a resource.</td></tr>
+    </table>
+
+    <p>Example of a route accepting GET and POST:</p>
+    <pre><code>from flask import request
+
+@app.route("/submit", methods=["GET", "POST"])
+def submit():
+    if request.method == "POST":
+        return "Form submitted successfully."
+
+    return "Display the form here."</code></pre>
+
+    <p>
+        Detailed form handling, validation and HTTP status codes will
+        be covered in later modules.
+    </p>
+</section>
+
+<!-- 15 -->
+
+<section class="card" id="server">
+    <h2>15. Flask Development Server</h2>
+
+    <h3>15.1 What Is the Development Server?</h3>
+    <p>
+        Flask includes a development server that makes it easy to run
+        and test an application locally. It allows a browser or another
+        HTTP client to send requests to your Flask application.
+    </p>
+
+    <h3>15.2 Understanding the Local URL</h3>
+    <p>Consider this URL:</p>
+    <pre><code>http://127.0.0.1:5000</code></pre>
+
+    <table>
+        <tr><th>Part</th><th>Meaning</th></tr>
+        <tr><td><code>http</code></td><td>The HTTP protocol.</td></tr>
+        <tr><td><code>127.0.0.1</code></td><td>The IPv4 loopback address, referring to the local computer.</td></tr>
+        <tr><td><code>5000</code></td><td>The port number on which Flask commonly listens by default.</td></tr>
+    </table>
+
+    <h3>15.3 Change the Port</h3>
+    <pre><code>app.run(port=8000, debug=True)</code></pre>
+
+    <p>
+        The application will listen on port <code>8000</code>, provided
+        that the port is available.
+    </p>
+
+    <p>Using the CLI:</p>
+    <pre><code>flask --app app run --port 8000 --debug</code></pre>
+
+    <h3>15.4 Make the Server Accessible on a Local Network</h3>
+    <pre><code>flask --app app run --host 0.0.0.0 --port 5000</code></pre>
+
+    <p>
+        Binding to <code>0.0.0.0</code> allows the server to listen on
+        available network interfaces. Other devices may be able to access
+        it through the computer's LAN IP address if network and firewall
+        settings permit.
+    </p>
+
+    <div class="warning">
+        Do not expose the development debugger to an untrusted network.
+        Binding to <code>0.0.0.0</code> can make your application reachable
+        by other devices. Use this only when you understand the network
+        and security implications.
+    </div>
+
+    <h3>15.5 Debug Mode</h3>
+    <p>Debug mode can provide:</p>
+    <ul>
+        <li>Automatic reloading after supported code changes.</li>
+        <li>Detailed error pages during development.</li>
+        <li>More convenient debugging while building the application.</li>
+    </ul>
+
+    <p>However, debug mode should be disabled in production.</p>
+
+    <h3>15.6 Development Server vs Production Server</h3>
+    <table>
+        <tr><th>Development server</th><th>Production server</th></tr>
+        <tr>
+            <td>Designed for local development and testing.</td>
+            <td>Designed for serving real users with an appropriate deployment setup.</td>
+        </tr>
+        <tr>
+            <td>Often uses Flask's reloader and debugger.</td>
+            <td>Runs with debugging disabled and uses production configuration.</td>
+        </tr>
+        <tr>
+            <td>Convenient for quick experiments.</td>
+            <td>Requires appropriate process management, monitoring and security.</td>
+        </tr>
+        <tr>
+            <td>Not recommended for production deployment.</td>
+            <td>Commonly uses a WSGI server such as Gunicorn for Flask.</td>
+        </tr>
+    </table>
+</section>
+
+<!-- 16 -->
+
+<section class="card" id="workflow">
+    <h2>16. Complete Application Workflow</h2>
+
+    <p>
+        The following example connects the main concepts introduced in
+        this module.
+    </p>
+
+    <div class="mini-card">
+        <p><strong>Step 1:</strong> The user enters a URL in the browser.</p>
+        <p><strong>Step 2:</strong> The HTTP request reaches the Flask application.</p>
+        <p><strong>Step 3:</strong> Flask finds the matching route.</p>
+        <p><strong>Step 4:</strong> The associated Python function executes.</p>
+        <p><strong>Step 5:</strong> The function creates a response.</p>
+        <p><strong>Step 6:</strong> Flask sends the response to the client.</p>
+        <p><strong>Step 7:</strong> The browser displays the result.</p>
+    </div>
+
+    <h3>Example: Returning a Dynamic Greeting</h3>
+
+    <pre><code>from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/hello/&lt;name&gt;")
+def hello(name):
+    return f"Hello, {name}! Welcome to Flask."
+
+if __name__ == "__main__":
+    app.run(debug=True)</code></pre>
+
+    <p>
+        If the user visits <code>/hello/Alex</code>, the route passes
+        <code>Alex</code> to the function. The response becomes:
+    </p>
+
+    <div class="success">
+        Hello, Alex! Welcome to Flask.
+    </div>
+
+    <p>
+        This example demonstrates URL routing, a view function, a dynamic
+        URL segment and response generation.
+    </p>
+</section>
+
+<!-- 17 -->
+
+<section class="card" id="common-errors">
+    <h2>17. Common Errors and Their Solutions</h2>
+
+    <h3>Error 1: No Module Named 'flask'</h3>
+    <p><strong>Possible cause:</strong> Flask is not installed in the Python environment being used.</p>
+    <p><strong>Solution:</strong></p>
+    <pre><code>python -m pip install Flask</code></pre>
+    <p>Ensure that the virtual environment is activated first.</p>
+
+    <h3>Error 2: Python Command Not Found</h3>
+    <p><strong>Possible cause:</strong> Python is not installed correctly or is not available in the terminal's PATH.</p>
+    <p><strong>Solution:</strong> On Windows, try <code>py --version</code>. If necessary, install Python from the official website.</p>
+
+    <h3>Error 3: Port Already in Use</h3>
+    <p><strong>Possible cause:</strong> Another process is already listening on the port.</p>
+    <p><strong>Solution:</strong> Stop the other development server or select another port.</p>
+    <pre><code>flask --app app run --port 8000</code></pre>
+
+    <h3>Error 4: Address Not Found in Browser</h3>
+    <p><strong>Possible cause:</strong> The server is not running, the URL is incorrect or the application is listening on another port.</p>
+    <p><strong>Solution:</strong> Check the terminal output and open the URL shown by Flask.</p>
+
+    <h3>Error 5: PowerShell Blocks Environment Activation</h3>
+    <p>
+        Use the Command Prompt activation command as an alternative:
+    </p>
+    <pre><code>.venv\Scripts\activate.bat</code></pre>
+
+    <h3>Error 6: Changes Are Not Appearing</h3>
+    <p>
+        Confirm that you edited the correct file and that the expected
+        server is running. Restart the development server if necessary.
+        Debug mode normally enables reloading for supported changes.
+    </p>
+
+    <h3>Error 7: 404 Not Found</h3>
+    <p>
+        A 404 response means the requested URL does not match an available
+        route, or the application intentionally returned that status.
+        Check the URL path and registered routes.
+    </p>
+</section>
+
+<!-- 18 -->
+
+<section class="card" id="revision">
+    <h2>18. Quick Revision Notes</h2>
+
+    <ul>
+        <li>Flask is a lightweight Python web framework.</li>
+        <li>It is commonly classified as a microframework.</li>
+        <li>Flask's core provides routing, request handling and response generation.</li>
+        <li>Flask integrates with the Jinja template engine.</li>
+        <li><code>Flask(__name__)</code> creates the application instance.</li>
+        <li><code>@app.route("/")</code> registers the root URL.</li>
+        <li>A view function handles a request and returns a response.</li>
+        <li><code>python -m venv .venv</code> creates a virtual environment.</li>
+        <li><code>python -m pip install Flask</code> installs Flask into the active environment.</li>
+        <li><code>python app.py</code> runs the example application when its main guard calls <code>app.run()</code>.</li>
+        <li><code>flask --app app run --debug</code> starts the app using Flask's CLI.</li>
+        <li>Flask commonly uses port 5000 for its local development server.</li>
+        <li>Flask is WSGI-based; FastAPI is ASGI-based.</li>
+        <li>Django provides many integrated features, including an ORM and admin interface.</li>
+        <li>Flask's development debugger must not be exposed in production.</li>
+        <li>Flask can build HTML websites, JSON APIs and data-driven applications.</li>
+    </ul>
+
+    <h3>Important Commands to Memorise</h3>
+    <pre><code>py --version
+mkdir flask_learning
+cd flask_learning
+py -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install Flask
+python -m flask --version
+python app.py
+flask --app app run --debug
+python -m pip freeze &gt; requirements.txt
+deactivate</code></pre>
+</section>
+
+<!-- 19 -->
+
+<section class="card" id="practice">
+    <h2>19. Practice Questions with Answers</h2>
+
+    <h3>Part A: Short-Answer Questions</h3>
+
+    <div class="question">
+        <strong>Q1. What is Flask?</strong>
+        <p class="answer">Answer: Flask is a lightweight, open-source Python web framework used to build web applications and APIs.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q2. Why is Flask called a microframework?</strong>
+        <p class="answer">Answer: Its core is minimal and does not require developers to use a large collection of built-in components.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q3. What is the purpose of Flask routing?</strong>
+        <p class="answer">Answer: Routing maps URL paths and HTTP methods to the Python functions that handle requests.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q4. What is a view function?</strong>
+        <p class="answer">Answer: It is a Python function that processes a request and returns a response.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q5. What does Flask(__name__) do?</strong>
+        <p class="answer">Answer: It creates a Flask application instance and helps Flask identify the application's module and resource locations.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q6. What is a virtual environment?</strong>
+        <p class="answer">Answer: It is an isolated Python environment used to manage a project's dependencies separately.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q7. Why should virtual environments be used?</strong>
+        <p class="answer">Answer: They reduce dependency conflicts and help projects maintain separate package installations.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q8. What is Jinja?</strong>
+        <p class="answer">Answer: Jinja is a template engine that generates dynamic text and HTML using variables, expressions, conditions and loops.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q9. What is the usual default port of Flask's development server?</strong>
+        <p class="answer">Answer: Port 5000.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q10. Can Flask be used to build REST APIs?</strong>
+        <p class="answer">Answer: Yes. Flask routes can process HTTP requests and return JSON responses to clients.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q11. What is WSGI?</strong>
+        <p class="answer">Answer: WSGI is the standard interface between Python web applications and compatible web servers.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q12. Why should debug mode be disabled in production?</strong>
+        <p class="answer">Answer: Detailed debugging facilities can expose sensitive information and may provide dangerous capabilities.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q13. Name two advantages of Flask.</strong>
+        <p class="answer">Answer: A lightweight core and flexible integration with Python libraries.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q14. Name two disadvantages of Flask.</strong>
+        <p class="answer">Answer: Many capabilities require additional libraries, and developers must make more architectural decisions.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q15. How does Django differ from Flask?</strong>
+        <p class="answer">Answer: Django includes more integrated features, while Flask has a smaller core and a more extension-oriented approach.</p>
+    </div>
+
+    <h3>Part B: Multiple-Choice Questions</h3>
+
+    <div class="question">
+        <strong>Q1. Flask is primarily written in:</strong>
+        <ol type="A">
+            <li>Java</li>
+            <li>Python</li>
+            <li>C#</li>
+            <li>PHP</li>
+        </ol>
+        <p class="answer">Correct answer: B — Python.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q2. Flask is commonly described as a:</strong>
+        <ol type="A">
+            <li>Database</li>
+            <li>Browser</li>
+            <li>Microframework</li>
+            <li>Programming language</li>
+        </ol>
+        <p class="answer">Correct answer: C — Microframework.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q3. Which command installs Flask?</strong>
+        <ol type="A">
+            <li><code>python install flask</code></li>
+            <li><code>python -m pip install Flask</code></li>
+            <li><code>flask new install</code></li>
+            <li><code>npm install flask</code></li>
+        </ol>
+        <p class="answer">Correct answer: B.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q4. Which command creates a virtual environment?</strong>
+        <ol type="A">
+            <li><code>py -m venv .venv</code></li>
+            <li><code>pip create Flask</code></li>
+            <li><code>flask start env</code></li>
+            <li><code>python -m flask venv</code></li>
+        </ol>
+        <p class="answer">Correct answer: A.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q5. Which decorator commonly registers a Flask route?</strong>
+        <ol type="A">
+            <li><code>@route.app</code></li>
+            <li><code>@app.route</code></li>
+            <li><code>@flask.url</code></li>
+            <li><code>@app.path</code></li>
+        </ol>
+        <p class="answer">Correct answer: B.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q6. Which HTTP method is commonly used to retrieve data?</strong>
+        <ol type="A">
+            <li>GET</li>
+            <li>POST</li>
+            <li>DELETE</li>
+            <li>PATCH</li>
+        </ol>
+        <p class="answer">Correct answer: A — GET.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q7. Which framework includes a built-in admin interface?</strong>
+        <ol type="A">
+            <li>Flask core</li>
+            <li>Django</li>
+            <li>Jinja</li>
+            <li>Werkzeug alone</li>
+        </ol>
+        <p class="answer">Correct answer: B — Django.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q8. Which framework is designed around ASGI?</strong>
+        <ol type="A">
+            <li>FastAPI</li>
+            <li>Flask alone</li>
+            <li>Jinja</li>
+            <li>SQLite</li>
+        </ol>
+        <p class="answer">Correct answer: A — FastAPI.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q9. What is the usual default Flask development port?</strong>
+        <ol type="A">
+            <li>3000</li>
+            <li>5000</li>
+            <li>8000</li>
+            <li>27017</li>
+        </ol>
+        <p class="answer">Correct answer: B — 5000.</p>
+    </div>
+
+    <div class="question">
+        <strong>Q10. Which command runs app.py through Flask's CLI with debugging enabled?</strong>
+        <ol type="A">
+            <li><code>flask --app app run --debug</code></li>
+            <li><code>npm flask app</code></li>
+            <li><code>python -m pip app</code></li>
+            <li><code>flask install app</code></li>
+        </ol>
+        <p class="answer">Correct answer: A.</p>
+    </div>
+
+    <h3>Part C: Practical Tasks</h3>
+    <ol>
+        <li>Install Python and Flask inside a virtual environment.</li>
+        <li>Create a Flask application that returns "Welcome to Flask" at the root URL.</li>
+        <li>Add <code>/about</code> and <code>/contact</code> routes.</li>
+        <li>Create a dynamic route that accepts an integer student ID.</li>
+        <li>Return a JSON response from an API route.</li>
+        <li>Run the application on port 8000.</li>
+        <li>Create a requirements file for the project.</li>
+        <li>Explain why the development debugger should not be enabled in production.</li>
+    </ol>
+</section>
+
+<!-- FINAL CHECKLIST -->
+
+<section class="card">
+    <h2>20. Module 1 Completion Checklist</h2>
+    <p>Before moving to Module 2, confirm that you can do the following:</p>
+    <ul class="checklist">
+        <li>Explain what Flask is and why it is used.</li>
+        <li>Describe Flask's major features, advantages and limitations.</li>
+        <li>Compare Flask, Django and FastAPI.</li>
+        <li>Check your Python installation.</li>
+        <li>Create and activate a virtual environment.</li>
+        <li>Install Flask and verify the installation.</li>
+        <li>Create and run a basic Flask application.</li>
+        <li>Explain the purpose of <code>Flask(__name__)</code>.</li>
+        <li>Create multiple routes and simple dynamic routes.</li>
+        <li>Explain the request-response cycle.</li>
+        <li>Understand the purpose and limitations of the development server.</li>
+    </ul>
+
+    <div class="success">
+        <strong>Next module:</strong> Routing and HTTP Fundamentals —
+        URL rules, view functions, dynamic routes, HTTP methods,
+        request objects, response objects, redirects and URL generation.
+    </div>
+</section>
+
+</main>
+
+<footer class="footer">
+    <p><strong>Flask Learning Notes</strong></p>
+    <p>Module 1: Introduction to Flask</p>
+    <p class="small">Learn the concept, understand the code, run it locally, and practise independently.</p>
+</footer>
+
+</body>
+</html>
